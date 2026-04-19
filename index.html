@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEET PG Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --bg2: #0d1220;
+    --bg3: #111827;
+    --card: #131c2e;
+    --card2: #172035;
+    --border: #1e2d47;
+    --border2: #253552;
+    --gold: #f5b731;
+    --gold2: #e8a61f;
+    --gold-dim: rgba(245,183,49,0.12);
+    --gold-dim2: rgba(245,183,49,0.06);
+    --text: #e8ecf4;
+    --text2: #8fa3c0;
+    --text3: #4d6380;
+    --red: #ef4444;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --purple: #a78bfa;
+    --teal: #2dd4bf;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow-gold: 0 0 40px rgba(245,183,49,0.08);
+  }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+min-height: 100vh;
+padding: 24px;
+background-image:
+radial-gradient(ellipse 80% 40% at 50% -10%, rgba(245,183,49,0.05) 0%, transparent 70%),
+radial-gradient(ellipse 40% 60% at 90% 50%, rgba(59,130,246,0.03) 0%, transparent 60%);
+overflow-x: hidden;
+}
+
+/* ─── TOP NAV ─────────────────────────────────────────────── */
+.topbar {
+display: flex; align-items: center; justify-content: space-between;
+margin-bottom: 28px;
+padding-bottom: 20px;
+border-bottom: 1px solid var(–border);
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.logo-mark {
+width: 36px; height: 36px; border-radius: 10px;
+background: linear-gradient(135deg, var(–gold), #d97706);
+display: flex; align-items: center; justify-content: center;
+font-family: ‘DM Serif Display’; font-size: 18px; color: #080c14;
+font-weight: bold; flex-shrink: 0;
+}
+.app-title { font-family: ‘DM Serif Display’; font-size: 20px; color: var(–text); }
+.app-subtitle { font-size: 12px; color: var(–text3); margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.live-clock {
+font-family: ‘JetBrains Mono’; font-size: 13px; color: var(–gold);
+background: var(–gold-dim); padding: 6px 12px; border-radius: 8px;
+border: 1px solid rgba(245,183,49,0.2);
+}
+.streak-badge {
+display: flex; align-items: center; gap: 6px;
+background: var(–card); border: 1px solid var(–border);
+padding: 6px 14px; border-radius: 8px; font-size: 13px;
+font-weight: 500; color: var(–text2);
+cursor: pointer; transition: border-color .2s;
+}
+.streak-badge:hover { border-color: var(–gold); }
+.streak-num { color: var(–gold); font-family: ‘JetBrains Mono’; font-size: 15px; font-weight: 500; }
+
+/* ─── MAIN GRID ───────────────────────────────────────────── */
+.grid {
+display: grid;
+grid-template-columns: 1fr 1fr 340px;
+grid-template-rows: auto;
+gap: 16px;
+}
+
+/* ─── CARDS ───────────────────────────────────────────────── */
+.card {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: var(–radius);
+padding: 22px;
+position: relative;
+overflow: hidden;
+transition: border-color .25s, box-shadow .25s;
+}
+.card:hover { border-color: var(–border2); box-shadow: var(–shadow); }
+.card-accent { border-color: rgba(245,183,49,0.25); box-shadow: var(–shadow-gold); }
+.card-label {
+font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+color: var(–text3); text-transform: uppercase; margin-bottom: 14px;
+display: flex; align-items: center; gap: 8px;
+}
+.card-label .dot {
+width: 6px; height: 6px; border-radius: 50%; background: var(–gold); flex-shrink: 0;
+}
+
+/* ─── QUOTE CARD ──────────────────────────────────────────── */
+.quote-card {
+grid-column: 1 / 3;
+background: linear-gradient(135deg, #131c2e 0%, #0f1929 100%);
+}
+.quote-card::before {
+content: ‘\201C’;
+position: absolute; top: -10px; left: 18px;
+font-family: ‘DM Serif Display’; font-size: 120px; color: rgba(245,183,49,0.07);
+line-height: 1; pointer-events: none;
+}
+.quote-text {
+font-family: ‘DM Serif Display’; font-size: 20px; line-height: 1.55;
+color: var(–text); margin-bottom: 10px; font-style: italic;
+min-height: 60px;
+}
+.quote-author {
+font-size: 12px; color: var(–gold); font-weight: 500; letter-spacing: 0.5px;
+}
+.quote-refresh {
+position: absolute; top: 18px; right: 18px;
+background: var(–gold-dim); border: 1px solid rgba(245,183,49,0.2);
+color: var(–gold); padding: 6px 12px; border-radius: 7px;
+font-size: 11px; cursor: pointer; font-weight: 500;
+transition: all .2s; display: flex; align-items: center; gap: 5px;
+}
+.quote-refresh:hover { background: rgba(245,183,49,0.2); }
+.quote-refresh.loading { opacity: 0.6; pointer-events: none; }
+
+/* ─── STREAK / PHASE ──────────────────────────────────────── */
+.info-strip {
+grid-column: 3 / 4;
+grid-row: 1;
+display: flex; flex-direction: column; gap: 12px;
+}
+.phase-card {
+background: linear-gradient(135deg, #1a2540, #111d33);
+border: 1px solid rgba(245,183,49,0.2);
+border-radius: var(–radius); padding: 18px;
+}
+.phase-label { font-size: 10px; color: var(–text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.phase-name { font-family: ‘DM Serif Display’; font-size: 17px; color: var(–gold); margin-bottom: 4px; }
+.phase-sub { font-size: 12px; color: var(–text2); line-height: 1.5; }
+.progress-outer {
+height: 4px; background: var(–border); border-radius: 4px;
+margin-top: 12px; overflow: hidden;
+}
+.progress-inner {
+height: 100%; background: linear-gradient(90deg, var(–gold), #f97316);
+border-radius: 4px; transition: width .6s ease;
+}
+.progress-label { font-size: 10px; color: var(–text3); margin-top: 5px; text-align: right; }
+
+/* ─── DAILY SCHEDULE ──────────────────────────────────────── */
+.schedule-card {
+grid-column: 1;
+grid-row: 2;
+}
+.schedule-date {
+font-family: ‘DM Serif Display’; font-size: 24px; color: var(–text);
+margin-bottom: 16px; display: flex; align-items: baseline; gap: 10px;
+}
+.schedule-day { color: var(–gold); }
+.time-blocks { display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow-y: auto; padding-right: 4px; }
+.time-blocks::-webkit-scrollbar { width: 3px; }
+.time-blocks::-webkit-scrollbar-track { background: transparent; }
+.time-blocks::-webkit-scrollbar-thumb { background: var(–border2); border-radius: 3px; }
+.time-block {
+display: grid; grid-template-columns: 80px 1fr;
+gap: 10px; align-items: start;
+padding: 10px 12px; border-radius: var(–radius-sm);
+border: 1px solid transparent;
+transition: all .2s; cursor: default;
+position: relative;
+}
+.time-block:hover { background: var(–gold-dim2); border-color: var(–border); }
+.time-block.active { background: rgba(245,183,49,0.08); border-color: rgba(245,183,49,0.25); }
+.time-block.active::before {
+content: ‘’; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+width: 3px; height: 60%; background: var(–gold); border-radius: 0 3px 3px 0;
+}
+.time-block.done { opacity: 0.45; }
+.block-time { font-family: ‘JetBrains Mono’; font-size: 10px; color: var(–text3); padding-top: 2px; }
+.block-info { }
+.block-title { font-size: 13px; font-weight: 500; color: var(–text); line-height: 1.3; }
+.block-sub { font-size: 11px; color: var(–text2); margin-top: 2px; line-height: 1.4; }
+.block-tag {
+display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 0.8px;
+padding: 2px 7px; border-radius: 4px; margin-top: 4px; text-transform: uppercase;
+}
+.tag-learn { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.tag-mcq { background: rgba(34,197,94,0.12); color: #4ade80; }
+.tag-rev { background: rgba(245,183,49,0.12); color: var(–gold); }
+.tag-pyq { background: rgba(167,139,250,0.12); color: #c4b5fd; }
+.tag-btr { background: rgba(251,146,60,0.12); color: #fb923c; }
+.tag-break { background: rgba(100,116,139,0.12); color: #94a3b8; }
+.tag-gt { background: rgba(239,68,68,0.12); color: #f87171; }
+
+/* ─── CHECKLIST ───────────────────────────────────────────── */
+.checklist-card {
+grid-column: 2;
+grid-row: 2;
+}
+.checklist { display: flex; flex-direction: column; gap: 6px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
+.checklist::-webkit-scrollbar { width: 3px; }
+.checklist::-webkit-scrollbar-thumb { background: var(–border2); border-radius: 3px; }
+.check-item {
+display: flex; align-items: center; gap: 12px;
+padding: 10px 12px; border-radius: var(–radius-sm);
+border: 1px solid var(–border); cursor: pointer;
+transition: all .2s; user-select: none;
+}
+.check-item:hover { border-color: var(–border2); background: var(–card2); }
+.check-item.checked { opacity: 0.5; border-color: transparent; }
+.check-box {
+width: 18px; height: 18px; border-radius: 5px;
+border: 2px solid var(–border2); flex-shrink: 0;
+display: flex; align-items: center; justify-content: center;
+transition: all .2s;
+}
+.check-item.checked .check-box {
+background: var(–gold); border-color: var(–gold);
+}
+.check-item.checked .check-box::after {
+content: ‘✓’; color: #080c14; font-size: 11px; font-weight: 700;
+}
+.check-text { font-size: 13px; color: var(–text); transition: all .2s; }
+.check-item.checked .check-text { text-decoration: line-through; color: var(–text3); }
+.progress-summary {
+margin-top: 14px; padding-top: 14px; border-top: 1px solid var(–border);
+}
+.prog-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.prog-label { font-size: 12px; color: var(–text2); }
+.prog-val { font-family: ‘JetBrains Mono’; font-size: 13px; color: var(–gold); }
+.prog-bar-wrap { height: 6px; background: var(–border); border-radius: 6px; overflow: hidden; }
+.prog-bar-fill {
+height: 100%; border-radius: 6px;
+background: linear-gradient(90deg, var(–gold), #f97316);
+transition: width .5s ease;
+}
+.add-task-row {
+display: flex; gap: 8px; margin-top: 12px;
+}
+.add-task-input {
+flex: 1; background: var(–bg3); border: 1px solid var(–border);
+border-radius: 8px; padding: 8px 12px; color: var(–text);
+font-family: ‘DM Sans’; font-size: 12px; outline: none;
+transition: border-color .2s;
+}
+.add-task-input:focus { border-color: var(–gold); }
+.add-task-input::placeholder { color: var(–text3); }
+.add-btn {
+background: var(–gold-dim); border: 1px solid rgba(245,183,49,0.25);
+color: var(–gold); padding: 8px 14px; border-radius: 8px;
+font-size: 18px; cursor: pointer; line-height: 1; transition: all .2s;
+}
+.add-btn:hover { background: rgba(245,183,49,0.2); }
+
+/* ─── POMODORO ────────────────────────────────────────────── */
+.pomo-card { grid-column: 3; grid-row: 2; }
+.pomo-ring-wrap {
+display: flex; flex-direction: column; align-items: center;
+padding: 10px 0 16px;
+}
+.pomo-svg { transform: rotate(-90deg); }
+.pomo-bg-circle { fill: none; stroke: var(–border); stroke-width: 6; }
+.pomo-progress-circle {
+fill: none; stroke: var(–gold); stroke-width: 6;
+stroke-linecap: round;
+stroke-dasharray: 283;
+stroke-dashoffset: 283;
+transition: stroke-dashoffset .5s ease, stroke .3s;
+filter: drop-shadow(0 0 6px rgba(245,183,49,0.5));
+}
+.pomo-center {
+position: absolute; display: flex; flex-direction: column;
+align-items: center; justify-content: center;
+}
+.pomo-time {
+font-family: ‘JetBrains Mono’; font-size: 30px; font-weight: 500;
+color: var(–text); letter-spacing: -1px;
+}
+.pomo-mode { font-size: 10px; color: var(–text3); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+.pomo-ring-container { position: relative; display: flex; align-items: center; justify-content: center; width: 140px; height: 140px; }
+.pomo-controls { display: flex; gap: 10px; margin-top: 4px; }
+.pomo-btn {
+padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 500;
+cursor: pointer; transition: all .2s; border: 1px solid;
+}
+.pomo-btn-primary {
+background: var(–gold); color: #080c14; border-color: var(–gold);
+}
+.pomo-btn-primary:hover { background: var(–gold2); }
+.pomo-btn-secondary {
+background: transparent; color: var(–text2); border-color: var(–border);
+}
+.pomo-btn-secondary:hover { border-color: var(–border2); color: var(–text); }
+.pomo-sessions {
+display: flex; gap: 6px; margin-top: 12px; justify-content: center;
+}
+.session-dot {
+width: 8px; height: 8px; border-radius: 50%;
+border: 1.5px solid var(–border2); transition: all .3s;
+}
+.session-dot.done { background: var(–gold); border-color: var(–gold); }
+.pomo-type-switch {
+display: flex; gap: 6px; margin-top: 14px; padding-top: 14px;
+border-top: 1px solid var(–border);
+}
+.pomo-type-btn {
+flex: 1; text-align: center; padding: 6px;
+border-radius: 7px; font-size: 11px; font-weight: 500;
+cursor: pointer; border: 1px solid var(–border); color: var(–text2);
+transition: all .2s;
+}
+.pomo-type-btn.active { background: var(–gold-dim); border-color: rgba(245,183,49,0.3); color: var(–gold); }
+
+/* ─── NEXT DAY PREVIEW ────────────────────────────────────── */
+.next-card { grid-column: 1; grid-row: 3; }
+.next-subjects { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.next-subj {
+display: flex; align-items: center; gap: 12px;
+padding: 10px 14px; border-radius: var(–radius-sm);
+background: var(–bg3); border: 1px solid var(–border);
+}
+.subj-color { width: 4px; height: 36px; border-radius: 4px; flex-shrink: 0; }
+.subj-info { }
+.subj-name { font-size: 13px; font-weight: 500; color: var(–text); }
+.subj-topics { font-size: 11px; color: var(–text2); margin-top: 2px; }
+
+/* ─── WEEKLY GOAL ─────────────────────────────────────────── */
+.weekly-card { grid-column: 2; grid-row: 3; }
+.weekly-items { display: flex; flex-direction: column; gap: 8px; }
+.weekly-item {
+display: flex; align-items: flex-start; gap: 10px;
+padding: 10px 12px; border-radius: var(–radius-sm);
+border: 1px solid var(–border);
+}
+.weekly-item.done-goal { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }
+.weekly-num {
+width: 22px; height: 22px; border-radius: 6px; background: var(–gold-dim);
+color: var(–gold); font-size: 11px; font-weight: 600;
+display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.weekly-text { font-size: 12px; color: var(–text2); line-height: 1.5; }
+.weekly-check {
+margin-left: auto; width: 16px; height: 16px; border-radius: 4px;
+border: 1.5px solid var(–border2); flex-shrink: 0; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+transition: all .2s;
+}
+.weekly-item.done-goal .weekly-check {
+background: var(–green); border-color: var(–green); color: white; font-size: 9px; font-weight: 700;
+}
+
+/* ─── RECALL WIDGET ───────────────────────────────────────── */
+.recall-card { grid-column: 3; grid-row: 3; }
+.recall-q {
+font-size: 14px; color: var(–text); line-height: 1.6;
+min-height: 70px; font-style: italic; margin-bottom: 12px;
+}
+.recall-sub { font-size: 11px; color: var(–text3); margin-bottom: 14px; }
+.reveal-btn {
+width: 100%; padding: 10px; border-radius: 9px;
+background: var(–gold-dim); border: 1px solid rgba(245,183,49,0.2);
+color: var(–gold); font-size: 12px; font-weight: 500; cursor: pointer;
+transition: all .2s; margin-bottom: 8px;
+}
+.reveal-btn:hover { background: rgba(245,183,49,0.2); }
+.recall-answer {
+background: var(–bg3); border: 1px solid var(–border);
+border-radius: 9px; padding: 12px; font-size: 12px;
+color: var(–text2); line-height: 1.6; display: none;
+}
+.recall-answer.show { display: block; }
+.recall-nav { display: flex; gap: 8px; margin-top: 10px; }
+.recall-nav-btn {
+flex: 1; padding: 8px; border-radius: 8px; font-size: 11px;
+font-weight: 500; cursor: pointer; transition: all .2s;
+border: 1px solid var(–border); color: var(–text2); background: transparent;
+text-align: center;
+}
+.recall-nav-btn:hover { border-color: var(–border2); color: var(–text); }
+.recall-nav-btn.good { border-color: rgba(34,197,94,0.3); color: var(–green); }
+.recall-nav-btn.good:hover { background: rgba(34,197,94,0.08); }
+.recall-nav-btn.hard { border-color: rgba(239,68,68,0.3); color: var(–red); }
+.recall-nav-btn.hard:hover { background: rgba(239,68,68,0.08); }
+
+/* ─── ERROR LOG ───────────────────────────────────────────── */
+.error-card { grid-column: 1; grid-row: 4; }
+.error-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.error-input {
+flex: 1; background: var(–bg3); border: 1px solid var(–border);
+border-radius: 8px; padding: 9px 12px; color: var(–text);
+font-family: ‘DM Sans’; font-size: 12px; outline: none;
+transition: border-color .2s;
+}
+.error-input:focus { border-color: rgba(239,68,68,0.4); }
+.error-input::placeholder { color: var(–text3); }
+.log-btn {
+background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+color: #f87171; padding: 9px 14px; border-radius: 8px;
+font-size: 12px; font-weight: 500; cursor: pointer; transition: all .2s;
+white-space: nowrap;
+}
+.log-btn:hover { background: rgba(239,68,68,0.2); }
+.error-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
+.error-item {
+display: flex; align-items: flex-start; gap: 10px;
+padding: 9px 12px; border-radius: var(–radius-sm);
+background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.12);
+font-size: 12px; color: var(–text2);
+}
+.error-subj {
+font-size: 10px; font-weight: 600; color: #f87171;
+background: rgba(239,68,68,0.1); padding: 2px 7px; border-radius: 4px;
+flex-shrink: 0; white-space: nowrap;
+}
+.error-del {
+margin-left: auto; color: var(–text3); cursor: pointer; font-size: 14px;
+flex-shrink: 0; transition: color .2s; padding-left: 8px;
+}
+.error-del:hover { color: var(–red); }
+
+/* ─── SUBJECT PROGRESS ────────────────────────────────────── */
+.subj-prog-card { grid-column: 2; grid-row: 4; }
+.subj-bars { display: flex; flex-direction: column; gap: 10px; }
+.subj-bar-row { }
+.subj-bar-label {
+display: flex; justify-content: space-between; margin-bottom: 4px;
+}
+.subj-bar-name { font-size: 12px; color: var(–text2); }
+.subj-bar-pct { font-family: ‘JetBrains Mono’; font-size: 11px; color: var(–text3); }
+.subj-bar-track { height: 5px; background: var(–border); border-radius: 5px; overflow: hidden; }
+.subj-bar-fill { height: 100%; border-radius: 5px; transition: width .6s ease; }
+
+/* ─── GT TRACKER WIDGET ───────────────────────────────────── */
+.gt-card { grid-column: 3; grid-row: 4; }
+.gt-list { display: flex; flex-direction: column; gap: 6px; }
+.gt-item {
+display: flex; align-items: center; justify-content: space-between;
+padding: 9px 12px; border-radius: var(–radius-sm);
+border: 1px solid var(–border); font-size: 12px;
+}
+.gt-item.done-gt { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.04); }
+.gt-item.upcoming { border-color: rgba(245,183,49,0.15); }
+.gt-name { color: var(–text); }
+.gt-score { font-family: ‘JetBrains Mono’; font-size: 12px; }
+.gt-score.good { color: var(–green); }
+.gt-score.mid { color: var(–gold); }
+.gt-score.bad { color: var(–red); }
+.gt-add-row { display: flex; gap: 6px; margin-top: 10px; }
+.gt-input {
+flex: 1; background: var(–bg3); border: 1px solid var(–border);
+border-radius: 7px; padding: 7px 10px; color: var(–text);
+font-family: ‘DM Sans’; font-size: 11px; outline: none;
+}
+.gt-input:focus { border-color: rgba(34,197,94,0.4); }
+.gt-input::placeholder { color: var(–text3); }
+.gt-log-btn {
+background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+color: var(–green); padding: 7px 12px; border-radius: 7px;
+font-size: 11px; font-weight: 500; cursor: pointer;
+}
+
+/* ─── MODAL ───────────────────────────────────────────────── */
+.modal-overlay {
+position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+display: none; align-items: center; justify-content: center;
+z-index: 1000; backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+background: var(–card); border: 1px solid var(–border);
+border-radius: 18px; padding: 28px; width: 420px; max-width: 95vw;
+}
+.modal h3 { font-family: ‘DM Serif Display’; font-size: 20px; margin-bottom: 16px; color: var(–text); }
+.modal-close {
+float: right; background: none; border: none; color: var(–text3);
+font-size: 20px; cursor: pointer; line-height: 1;
+}
+.modal-close:hover { color: var(–text); }
+.modal p { font-size: 13px; color: var(–text2); line-height: 1.7; margin-bottom: 10px; }
+
+/* ─── SCROLLBARS ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(–border2); border-radius: 4px; }
+
+/* ─── ANIMATIONS ──────────────────────────────────────────── */
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(12px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+.card { animation: fadeIn .4s ease forwards; }
+.card:nth-child(2) { animation-delay: .05s; }
+.card:nth-child(3) { animation-delay: .1s; }
+.card:nth-child(4) { animation-delay: .15s; }
+.card:nth-child(5) { animation-delay: .2s; }
+.card:nth-child(6) { animation-delay: .25s; }
+
+@keyframes pulse {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.4; }
+}
+.blink { animation: pulse 1.5s ease-in-out infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinning { animation: spin .6s linear infinite; }
+
+/* ─── TOAST ───────────────────────────────────────────────── */
+.toast {
+position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+background: var(–card); border: 1px solid var(–border);
+padding: 12px 20px; border-radius: 10px; font-size: 13px; color: var(–text);
+opacity: 0; pointer-events: none; transition: opacity .3s;
+z-index: 999; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+/* responsive */
+@media (max-width: 1100px) {
+.grid { grid-template-columns: 1fr 1fr; }
+.quote-card { grid-column: 1 / 3; }
+.info-strip { grid-column: 1 / 3; flex-direction: row; }
+.pomo-card, .recall-card, .gt-card { grid-column: 1 / 3; }
+}
+@media (max-width: 700px) {
+body { padding: 12px; }
+.grid { grid-template-columns: 1fr; }
+.quote-card, .info-strip, .schedule-card, .checklist-card,
+.pomo-card, .next-card, .weekly-card, .recall-card,
+.error-card, .subj-prog-card, .gt-card { grid-column: 1; }
+}
+</style>
+
+</head>
+<body>
+
+<!-- ─── TOPBAR ─────────────────────────────────────────────────── -->
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-mark">N</div>
+    <div>
+      <div class="app-title">NEET PG Command Centre</div>
+      <div class="app-subtitle">Rank &lt; 800 · Your daily operations base</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="live-clock" id="clock">00:00:00</div>
+    <div class="streak-badge" onclick="showStreakInfo()">
+      🔥 <span class="streak-num" id="streakNum">0</span> day streak
+    </div>
+  </div>
+</div>
+
+<!-- ─── GRID ───────────────────────────────────────────────────── -->
+
+<div class="grid">
+
+  <!-- QUOTE -->
+
+  <div class="card quote-card card-accent">
+    <div class="card-label"><span class="dot"></span>Daily Fuel</div>
+    <button class="quote-refresh" id="quoteRefreshBtn" onclick="fetchQuote()">
+      <span id="quoteIcon">↻</span> New quote
+    </button>
+    <div class="quote-text" id="quoteText">Loading your daily inspiration…</div>
+    <div class="quote-author" id="quoteAuthor"></div>
+  </div>
+
+  <!-- PHASE INFO -->
+
+  <div class="info-strip">
+    <div class="phase-card">
+      <div class="phase-label">Current Phase</div>
+      <div class="phase-name" id="phaseName">Phase 1 — Small Subjects</div>
+      <div class="phase-sub" id="phaseSub">PSM · ENT · Forensics · Ophthalmology · Dermatology</div>
+      <div class="progress-outer"><div class="progress-inner" id="phaseBar" style="width:5%"></div></div>
+      <div class="progress-label" id="phaseProgress">Week 1 of 8</div>
+    </div>
+  </div>
+
+  <!-- DAILY SCHEDULE -->
+
+  <div class="card schedule-card">
+    <div class="card-label"><span class="dot"></span>Today's Schedule</div>
+    <div class="schedule-date">
+      <span id="schedDateDay" class="schedule-day">Monday</span>
+      <span id="schedDateFull" style="font-size:16px; color: var(--text2);"></span>
+    </div>
+    <div class="time-blocks" id="timeBlocks"></div>
+  </div>
+
+  <!-- CHECKLIST -->
+
+  <div class="card checklist-card">
+    <div class="card-label"><span class="dot"></span>Today's Checklist</div>
+    <div class="checklist" id="checklist"></div>
+    <div class="progress-summary">
+      <div class="prog-row">
+        <span class="prog-label">Today's completion</span>
+        <span class="prog-val" id="progVal">0%</span>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progBar" style="width:0%"></div></div>
+    </div>
+    <div class="add-task-row">
+      <input class="add-task-input" id="newTaskInput" placeholder="Add a custom task…" onkeydown="if(event.key==='Enter')addTask()">
+      <button class="add-btn" onclick="addTask()">+</button>
+    </div>
+  </div>
+
+  <!-- POMODORO -->
+
+  <div class="card pomo-card">
+    <div class="card-label"><span class="dot"></span>Pomodoro Timer</div>
+    <div class="pomo-ring-wrap">
+      <div class="pomo-ring-container">
+        <svg class="pomo-svg" width="140" height="140" viewBox="0 0 100 100">
+          <circle class="pomo-bg-circle" cx="50" cy="50" r="45"/>
+          <circle class="pomo-progress-circle" id="pomoCircle" cx="50" cy="50" r="45"/>
+        </svg>
+        <div class="pomo-center">
+          <div class="pomo-time" id="pomoTime">50:00</div>
+          <div class="pomo-mode" id="pomoMode">Focus</div>
+        </div>
+      </div>
+      <div class="pomo-controls">
+        <button class="pomo-btn pomo-btn-primary" id="pomoBtn" onclick="togglePomo()">Start</button>
+        <button class="pomo-btn pomo-btn-secondary" onclick="resetPomo()">Reset</button>
+      </div>
+      <div class="pomo-sessions" id="pomoSessions"></div>
+    </div>
+    <div class="pomo-type-switch">
+      <div class="pomo-type-btn active" id="pt50" onclick="setPomoType(50,10,'50/10')">50/10</div>
+      <div class="pomo-type-btn" id="pt25" onclick="setPomoType(25,5,'25/5')">25/5</div>
+      <div class="pomo-type-btn" id="pt90" onclick="setPomoType(90,20,'90/20')">90/20</div>
+    </div>
+  </div>
+
+  <!-- NEXT DAY PREVIEW -->
+
+  <div class="card next-card">
+    <div class="card-label"><span class="dot"></span>Tomorrow's Targets</div>
+    <div class="next-subjects" id="nextSubjects"></div>
+  </div>
+
+  <!-- WEEKLY GOAL -->
+
+  <div class="card weekly-card">
+    <div class="card-label"><span class="dot"></span>Weekly Goals</div>
+    <div class="weekly-items" id="weeklyGoals"></div>
+  </div>
+
+  <!-- RECALL WIDGET -->
+
+  <div class="card recall-card">
+    <div class="card-label"><span class="dot"></span>Active Recall Flash</div>
+    <div class="recall-q" id="recallQ">Click "New Question" to get a concept prompt for your current subject.</div>
+    <div class="recall-sub" id="recallSub"></div>
+    <button class="reveal-btn" onclick="fetchRecall()">⚡ New Question</button>
+    <div class="recall-answer" id="recallAns"></div>
+    <div class="recall-nav" id="recallNav" style="display:none">
+      <button class="recall-nav-btn good" onclick="nextRecall('easy')">✓ Got it</button>
+      <button class="recall-nav-btn hard" onclick="nextRecall('hard')">✗ Again</button>
+    </div>
+  </div>
+
+  <!-- ERROR LOG -->
+
+  <div class="card error-card">
+    <div class="card-label"><span class="dot"></span>Error Log</div>
+    <div class="error-input-row">
+      <select class="error-input" id="errorSubj" style="max-width:130px; cursor:pointer;">
+        <option>Medicine</option><option>Surgery</option><option>OBG</option>
+        <option>Pathology</option><option>Pharmacology</option><option>PSM</option>
+        <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
+        <option>Microbiology</option><option>Paediatrics</option><option>Dermatology</option>
+        <option>ENT</option><option>Ophthalmology</option><option>Orthopaedics</option>
+        <option>Forensics</option><option>Psychiatry</option><option>Anaesthesia</option>
+        <option>Radiology</option>
+      </select>
+      <input class="error-input" id="errorText" placeholder="Describe the concept you got wrong…" onkeydown="if(event.key==='Enter')addError()">
+      <button class="log-btn" onclick="addError()">Log</button>
+    </div>
+    <div class="error-list" id="errorList"></div>
+  </div>
+
+  <!-- SUBJECT PROGRESS -->
+
+  <div class="card subj-prog-card">
+    <div class="card-label"><span class="dot"></span>Subject Progress</div>
+    <div class="subj-bars" id="subjBars"></div>
+  </div>
+
+  <!-- GT TRACKER -->
+
+  <div class="card gt-card">
+    <div class="card-label"><span class="dot"></span>Grand Test Scores</div>
+    <div class="gt-list" id="gtList"></div>
+    <div class="gt-add-row">
+      <input class="gt-input" id="gtName" placeholder="GT name (e.g. GT#1)">
+      <input class="gt-input" id="gtScore" placeholder="Score %" type="number" min="0" max="100">
+      <button class="gt-log-btn" onclick="addGT()">+ Log</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ─── SCRIPTS ─────────────────────────────────────────────────── -->
+
+<script>
+// ══════════════════════════════════════════════════════════
+// SCHEDULE DATA — from the Phase 1 & 2 blueprint
+// ══════════════════════════════════════════════════════════
+const SCHEDULE = {
+  // dayIndex 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+  // week drives the content
+  phases: [
+    {
+      name: "Phase 1 — Small Subjects",
+      sub: "PSM · ENT · Forensics · Ophthalmology · Dermatology",
+      weeks: 8,
+      color: "#06b6d4"
+    },
+    {
+      name: "Phase 2 — The Big 5",
+      sub: "Medicine (Cardio focus) · Surgery · OBG · Pathology · Pharmacology",
+      weeks: 10,
+      color: "#3b82f6"
+    },
+    {
+      name: "Phase 3 — Grand Revision + BTR",
+      sub: "Full subject-wise revision · BTR 2.0 · Weekly GTs",
+      weeks: 8,
+      color: "#22c55e"
+    },
+    {
+      name: "Phase 4 — Rapid Revision + GT Surge",
+      sub: "2nd pass · 1 GT/week · 100Q daily · INI-CET prep",
+      weeks: 8,
+      color: "#f97316"
+    },
+    {
+      name: "Phase 5 — Final Sprint",
+      sub: "One-liners only · Full mocks every 3 days · Zero new topics",
+      weeks: 4,
+      color: "#a78bfa"
+    }
+  ],
+  startDate: "2025-05-05", // adjust as needed
+
+  daily: [
+    { time: "9:00–9:30 AM",   title: "Morning Ritual",              sub: "Review today's plan, water, light movement",      tag: "break"  },
+    { time: "9:30–10:20 AM",  title: "Block 1 — Subject A",         sub: "Primary learning · Marrow E8 notes",             tag: "learn"  },
+    { time: "10:30–11:20 AM", title: "Block 2 — Subject A cont.",   sub: "Continue topic · concept mapping",               tag: "learn"  },
+    { time: "11:30 AM–12:20", title: "MCQ Block — Subject A",       sub: "40–60 Qs · review immediately · error log",      tag: "mcq"    },
+    { time: "12:20–1:00 PM",  title: "Lunch Break",                 sub: "Eat · walk · complete rest",                     tag: "break"  },
+    { time: "1:00–1:50 PM",   title: "Block 3 — Subject B",         sub: "Second subject · Marrow E8 → active recall",     tag: "learn"  },
+    { time: "2:00–2:50 PM",   title: "Block 4 — Subject B cont.",   sub: "Tables · diagrams from memory",                  tag: "learn"  },
+    { time: "3:00–3:50 PM",   title: "MCQ Block — Subject B",       sub: "40–60 Qs · error log · pattern spotting",       tag: "mcq"    },
+    { time: "3:50–4:20 PM",   title: "Longer Break",                sub: "Snack · power nap max 20 min",                   tag: "break"  },
+    { time: "4:20–5:10 PM",   title: "Block 5 — Subject C / Rev",  sub: "Third subject OR D+7 spaced revision",           tag: "learn"  },
+    { time: "5:20–6:10 PM",   title: "PYQ Session",                 sub: "50 Qs timed · topic-wise · detailed review",    tag: "pyq"    },
+    { time: "6:10–7:00 PM",   title: "Dinner & Wind-down",          sub: "Family time · walk · fully offline",             tag: "break"  },
+    { time: "7:00–7:50 PM",   title: "BTR / Spaced Revision",       sub: "BTR 2.0 video (Phase 3+) OR D+1/D+3 review",    tag: "btr"    },
+    { time: "8:00–8:50 PM",   title: "Evening MCQ Marathon",        sub: "Mixed subjects · exam conditions · track score", tag: "mcq"    },
+    { time: "9:00–9:50 PM",   title: "Day Wrap Revision",           sub: "Error log review · tomorrow's plan",             tag: "rev"    },
+    { time: "10:30–11:20 PM", title: "Night GT Simulation",         sub: "Full-mixed or subject GT (Weekends: full GT)",   tag: "gt"     },
+    { time: "11:20 PM–12 AM", title: "Final Recall + Prep",         sub: "5 key facts per subject · set tomorrow",         tag: "rev"    },
+    { time: "12:00–1:00 AM",  title: "🔒 Sacred Hour",              sub: "Yours. No study. Wind down. Sleep prep.",        tag: "break"  },
+  ],
+
+  // Phase 1 week patterns (subjects per day)
+  weekSubjects: {
+    1: { // Week 1-2: PSM + ENT + Forensics
+      0: ["PSM","ENT","Forensics"],
+      1: ["PSM","ENT","Forensics"],
+      2: ["PSM","ENT","Forensics"],
+      3: ["PSM","ENT","Forensics"],
+      4: ["PSM","ENT","Forensics"],
+      5: ["PSM PYQs","ENT+Forensics PYQs","Revision"],
+      6: ["Grand Test","Error Analysis","Spaced Rev"],
+    },
+    3: { // Week 3-4: Ophth + Derma + Anaes + Radiology
+      0: ["Ophthalmology","Dermatology","Anaesthesia"],
+      1: ["Ophthalmology","Dermatology","Anaesthesia"],
+      2: ["Ophthalmology","Dermatology","Radiology"],
+      3: ["Ophthalmology","Dermatology","Radiology"],
+      4: ["Ophthalmology","Dermatology","Radiology"],
+      5: ["Ophth PYQs","Derma PYQs","Anaes+Radio PYQs"],
+      6: ["GT #1 (100 Qs)","Error Analysis","Spaced Rev"],
+    },
+    5: { // Week 5-6: Psychiatry + Paeds + Ortho
+      0: ["Psychiatry","Paediatrics","Orthopaedics"],
+      1: ["Psychiatry","Paediatrics","Orthopaedics"],
+      2: ["Psychiatry","Paediatrics","Orthopaedics"],
+      3: ["Psychiatry","Paediatrics","Orthopaedics"],
+      4: ["Psychiatry","Paediatrics","Orthopaedics"],
+      5: ["Psychiatry PYQs","Paeds+Ortho PYQs","Phase 1 Revision"],
+      6: ["Spaced Rev","Error Log","Phase 1 Consolidation"],
+    },
+    7: { // Week 7-8: PSM Part 2 + Micro + Consolidation
+      0: ["PSM Part 2","Microbiology","Comm Med Rev"],
+      1: ["PSM Part 2","Microbiology","Micro Immunology"],
+      2: ["PSM Part 2","Microbiology","Micro Infections"],
+      3: ["PSM Part 2","Microbiology","Revision"],
+      4: ["PSM Part 2","Micro PYQs","Phase 1 Rapid Rev"],
+      5: ["GT #2 Prep","Error Review","Phase 1 One-liners"],
+      6: ["GT #2 (150 Qs)","GT Analysis","Plan Update"],
+    },
+  }
+};
+
+// Weekly goals per week number
+const WEEKLY_GOALS = {
+  1: [
+    "Complete PSM Biostatistics — all formulas memorized",
+    "ENT Ear (Parts 1–4): Anatomy + Audiometry done",
+    "Forensics Jurisprudence + Traumatology covered",
+    "50 PYQs from PSM/ENT/Forensics attempted",
+    "Spaced rep log started — minimum 10 topics entered",
+  ],
+  2: [
+    "PSM Epidemiology + Communicable Diseases complete",
+    "ENT full (Ear+Nose+Pharynx+Larynx) done",
+    "Forensics complete — all 9 chapters",
+    "PYQ block Sunday: 90 Qs timed",
+    "Error log has ≥ 20 entries with reason analysis",
+  ],
+  3: [
+    "Ophthalmology Retina + Glaucoma: done",
+    "Dermatology Infections + STDs: done",
+    "Anaesthesia complete (short subject — 2 days max)",
+    "Radiology complete (1 day)",
+    "50 Ophth + 50 Derma MCQs done",
+  ],
+  4: [
+    "Full Ophthalmology + Dermatology revision",
+    "GT #1 attempted: 100 Qs · target >55%",
+    "GT analysis complete — top 5 error patterns identified",
+    "Phase 1 Week 1–2 spaced revision done",
+    "BTR evening session started for ENT",
+  ],
+  5: [
+    "Psychiatry all chapters: Psychosis→Neurocognitive done",
+    "Paediatrics Neonatology Parts 1–3 complete",
+    "Orthopaedics Bone infections + Paediatric Ortho done",
+    "60 Psychiatry + 60 Paeds+Ortho PYQs attempted",
+    "Streak maintained all 7 days",
+  ],
+  6: [
+    "Psychiatry + Paeds + Ortho full revision",
+    "Phase 1 Wk 1–4 D+21 spaced revision done",
+    "Sports injuries + Fracture principles (Ortho) done",
+    "Error log reviewed — relearned all wrong concepts",
+    "Tomorrow plan ready every night before sleep",
+  ],
+  7: [
+    "PSM Part 2: Contraception + MCH + BMW + Nutrition done",
+    "Microbiology: General + Immunology complete",
+    "Micro: All systems infections covered",
+    "GT #2 prep: Phase 1 one-liners rapid-fired",
+    "Subject tracker updated for all Phase 1 subjects",
+  ],
+  8: [
+    "GT #2 (150 Qs): Target >60% — attempted and reviewed",
+    "Phase 1 complete — all 11 subjects done",
+    "Weak subjects identified and flagged for Phase 3",
+    "Phase 2 plan reviewed and ready",
+    "8-day streak unbroken entering Phase 2",
+  ],
+};
+
+// Subjects for progress tracking
+const SUBJECTS = [
+  { name: "Medicine",      color: "#3b82f6" },
+  { name: "Surgery",       color: "#22c55e" },
+  { name: "OBG",           color: "#ec4899" },
+  { name: "Pathology",     color: "#f97316" },
+  { name: "Pharmacology",  color: "#a78bfa" },
+  { name: "PSM",           color: "#2dd4bf" },
+  { name: "Dermatology",   color: "#fbbf24" },
+  { name: "ENT",           color: "#60a5fa" },
+  { name: "Ophthalmology", color: "#34d399" },
+  { name: "Psychiatry",    color: "#f472b6" },
+  { name: "Paediatrics",   color: "#fb923c" },
+  { name: "Orthopaedics",  color: "#94a3b8" },
+  { name: "Forensics",     color: "#e879f9" },
+  { name: "Microbiology",  color: "#4ade80" },
+];
+
+// Recall questions bank (NEET PG focused)
+const RECALL_BANK = [
+  { q: "A patient has aortic stenosis. What are the classic triad of symptoms, and what does each signify physiologically?", a: "Angina (↑O₂ demand, fixed CO), Syncope (exertional vasodilation without CO rise), Heart failure (LV decompensation). Syncope = worst prognosis trigger.", subj: "Medicine — Cardiology" },
+  { q: "Differentiate Type I vs Type II errors in a clinical trial. Which is controlled by sample size?", a: "Type I (α): Rejecting true null (false positive) — set at 5%. Type II (β): Accepting false null (false negative). Power = 1–β. Sample size controls both, but primarily Type II.", subj: "PSM — Biostatistics" },
+  { q: "Name the Erlanger-Gasser classification of nerve fibres in order of susceptibility to local anaesthetic blockade.", a: "B > C > Aδ > Aγ > Aβ > Aα. Myelinated before unmyelinated. Pain and temperature first, then touch, then motor last.", subj: "Anaesthesia" },
+  { q: "What is the Hutchinson's triad of congenital syphilis, and at what age do each manifest?", a: "Interstitial keratitis (5–20 yrs), Hutchinson's teeth (upper central incisors, notched), Nerve deafness. Triad in late congenital syphilis.", subj: "Dermatology" },
+  { q: "A patient has Pemphigus vulgaris. What is the target antigen, the key histological finding, and the direct IF pattern?", a: "Target: Desmoglein 3 (mucous membranes) + Dsg1 (skin). Histology: Suprabasal acantholysis, Tzanck cells. DIF: IgG + C3 in intercellular spaces ('chicken wire' pattern).", subj: "Dermatology" },
+  { q: "Describe the Austin Flint murmur — what causes it and how does it differ from true MS?", a: "Austin Flint: Mid-diastolic murmur in severe AR. Caused by AR jet vibrating the anterior mitral leaflet → functional MS. No OS, no loud S1 (unlike true MS). Doppler differentiates.", subj: "Medicine — Cardiology" },
+  { q: "What does the P/F ratio measure in ARDS? What are the Berlin definition thresholds?", a: "P/F = PaO₂/FiO₂. Mild: 200–300, Moderate: 100–200, Severe: <100. All require bilateral opacities and PCWP <18 or no cardiac cause.", subj: "Medicine — Pulmonology" },
+  { q: "In SLE, which antibody is most sensitive? Most specific? What's the role of anti-Sm?", a: "Most sensitive: ANA (95–99%, not specific). Most specific for SLE: Anti-dsDNA + Anti-Sm. Anti-dsDNA also correlates with disease activity and nephritis.", subj: "Medicine — Rheumatology" },
+  { q: "A patient has CML. What chromosomal abnormality is present? What does the gene product do?", a: "Philadelphia chromosome: t(9;22). BCR-ABL fusion → constitutively active tyrosine kinase → uncontrolled myeloid proliferation. Treated with Imatinib (TKI).", subj: "Pathology — Haematology" },
+  { q: "What are DUKE criteria for infective endocarditis? Name 2 major and 3 minor criteria.", a: "Major: Positive blood culture (2 typical organisms), Echo evidence (vegetation/abscess/new regurgitation). Minor: Predisposition, fever >38°C, vascular phenomena, immunological phenomena, microbiological.", subj: "Medicine — Cardiology" },
+  { q: "Differentiate Caput succedaneum vs Cephalhaematoma in a newborn.", a: "Caput: Over scalp (not limited by sutures), crosses suture lines, present at birth, soft, pits. Cephalhaematoma: Subperiosteal, does NOT cross sutures, appears hours after birth, may calcify, firm.", subj: "Paediatrics — Neonatology" },
+  { q: "What is Koilocyte? In which lesion is it pathognomonic and what virus causes it?", a: "Koilocyte: Superficial squamous cell with perinuclear halo (cytopathic effect). Pathognomonic of HPV infection. Seen in condyloma acuminata and CIN. HPV 6,11 (condyloma) vs 16,18 (CIN/carcinoma).", subj: "Pathology — Systemic" },
+  { q: "A patient presents with haemoptysis, haematuria and glomerulonephritis. What is the diagnosis, antibody, and target?", a: "Goodpasture's syndrome. Anti-GBM antibody. Target: α3 chain of Type IV collagen (present in glomerular and alveolar BM). Linear IgG on IF.", subj: "Medicine — Renal" },
+  { q: "What is HELLP syndrome? What lab values define it and what is the management?", a: "Haemolysis + Elevated Liver enzymes + Low Platelets. In severe pre-eclampsia. LDH >600, ALT/AST elevated, Plt <100,000. Definitive Rx: Delivery. MgSO4 for seizure prophylaxis.", subj: "OBG — Obstetrics" },
+  { q: "Describe the Salter-Harris classification of growth plate fractures. Which type has worst prognosis?", a: "I: Through physis. II: Through physis + metaphysis (most common). III: Through physis + epiphysis (intra-articular). IV: Through all 3. V: Crush injury (worst prognosis — avascular necrosis risk).", subj: "Orthopaedics" },
+];
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+function getState(key, def) {
+  try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : def; }
+  catch { return def; }
+}
+function setState(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+}
+
+// ══════════════════════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  highlightCurrentBlock();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ══════════════════════════════════════════════════════════
+// DATE & PHASE
+// ══════════════════════════════════════════════════════════
+function getWeekNum() {
+  const start = new Date(SCHEDULE.startDate);
+  const now = new Date();
+  const diffMs = now - start;
+  const diffDays = Math.floor(diffMs / 86400000);
+  return Math.max(1, Math.min(38, Math.floor(diffDays / 7) + 1));
+}
+
+function getCurrentPhase(week) {
+  const thresholds = [8, 18, 26, 34, 38];
+  const phases = SCHEDULE.phases;
+  for (let i = 0; i < thresholds.length; i++) {
+    if (week <= thresholds[i]) return { phase: phases[i], phaseNum: i+1, weekInPhase: week - (i === 0 ? 0 : thresholds[i-1]), totalWeeks: phases[i].weeks };
+  }
+  return { phase: phases[4], phaseNum: 5, weekInPhase: 4, totalWeeks: 4 };
+}
+
+function initDatePhase() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('schedDateDay').textContent = days[now.getDay()];
+  document.getElementById('schedDateFull').textContent = now.toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+
+  const week = getWeekNum();
+  const { phase, weekInPhase, totalWeeks } = getCurrentPhase(week);
+  document.getElementById('phaseName').textContent = phase.name;
+  document.getElementById('phaseSub').textContent = phase.sub;
+  const pct = Math.round((weekInPhase / totalWeeks) * 100);
+  document.getElementById('phaseBar').style.width = pct + '%';
+  document.getElementById('phaseProgress').textContent = `Week ${weekInPhase} of ${totalWeeks}`;
+}
+
+// ══════════════════════════════════════════════════════════
+// SCHEDULE BLOCKS
+// ══════════════════════════════════════════════════════════
+function highlightCurrentBlock() {
+  const now = new Date();
+  const hour = now.getHours(), min = now.getMinutes();
+  const currentMins = hour * 60 + min;
+
+  const blocks = document.querySelectorAll('.time-block');
+  blocks.forEach(b => b.classList.remove('active'));
+
+  const timeRanges = [
+    [9*60, 9*60+30], [9*60+30, 10*60+20], [10*60+30, 11*60+20],
+    [11*60+30, 12*60+20], [12*60+20, 13*60], [13*60, 13*60+50],
+    [14*60, 14*60+50], [15*60, 15*60+50], [15*60+50, 16*60+20],
+    [16*60+20, 17*60+10], [17*60+20, 18*60+10], [18*60+10, 19*60],
+    [19*60, 19*60+50], [20*60, 20*60+50], [21*60, 21*60+50],
+    [22*60+30, 23*60+20], [23*60+20, 24*60], [0, 1*60],
+  ];
+
+  timeRanges.forEach((range, i) => {
+    const inRange = currentMins >= range[0] && currentMins < range[1];
+    if (inRange && blocks[i]) {
+      blocks[i].classList.add('active');
+      blocks[i].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    if (currentMins >= range[1] && blocks[i]) blocks[i].classList.add('done');
+  });
+}
+
+function renderSchedule() {
+  const container = document.getElementById('timeBlocks');
+  container.innerHTML = '';
+  SCHEDULE.daily.forEach(block => {
+    const div = document.createElement('div');
+    div.className = 'time-block';
+    div.innerHTML = `
+      <div class="block-time">${block.time}</div>
+      <div class="block-info">
+        <div class="block-title">${block.title}</div>
+        <div class="block-sub">${block.sub}</div>
+        <span class="block-tag tag-${block.tag}">${block.tag.toUpperCase()}</span>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// CHECKLIST
+// ══════════════════════════════════════════════════════════
+function getTodayKey() {
+  return 'checklist_' + new Date().toISOString().slice(0,10);
+}
+
+function getDefaultTasks() {
+  const week = getWeekNum();
+  const day = new Date().getDay();
+  const weekBlock = week <= 2 ? 1 : week <= 4 ? 3 : week <= 6 ? 5 : 7;
+  const subjs = SCHEDULE.weekSubjects[weekBlock]?.[day] || ['Subject A', 'Subject B', 'Subject C'];
+  return [
+    `📚 Study: ${subjs[0]} — Primary learning block`,
+    `🧠 MCQs: ${subjs[0]} — 40–60 questions + error log`,
+    `📚 Study: ${subjs[1]} — Primary learning block`,
+    `🧠 MCQs: ${subjs[1]} — 40–60 questions`,
+    `📖 Study: ${subjs[2]} / Spaced revision`,
+    `📋 PYQ Session — 50 Qs timed`,
+    `🔁 BTR / Evening revision slot`,
+    `📊 Update spaced repetition log`,
+    `📝 Write tomorrow's plan`,
+    `✅ Error log review before sleep`,
+  ];
+}
+
+function renderChecklist() {
+  const key = getTodayKey();
+  let data = getState(key, null);
+  if (!data) {
+    data = { tasks: getDefaultTasks().map(t => ({ text: t, done: false, custom: false })) };
+    setState(key, data);
+  }
+
+  const container = document.getElementById('checklist');
+  container.innerHTML = '';
+  data.tasks.forEach((task, i) => {
+    const div = document.createElement('div');
+    div.className = 'check-item' + (task.done ? ' checked' : '');
+    div.onclick = () => toggleTask(i);
+    div.innerHTML = `
+      <div class="check-box"></div>
+      <div class="check-text">${task.text}</div>`;
+    container.appendChild(div);
+  });
+  updateProgress(data.tasks);
+}
+
+function toggleTask(i) {
+  const key = getTodayKey();
+  const data = getState(key, { tasks: [] });
+  data.tasks[i].done = !data.tasks[i].done;
+  setState(key, data);
+  renderChecklist();
+  updateStreak();
+}
+
+function addTask() {
+  const input = document.getElementById('newTaskInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const key = getTodayKey();
+  const data = getState(key, { tasks: [] });
+  data.tasks.push({ text, done: false, custom: true });
+  setState(key, data);
+  input.value = '';
+  renderChecklist();
+  showToast('Task added');
+}
+
+function updateProgress(tasks) {
+  const done = tasks.filter(t => t.done).length;
+  const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+  document.getElementById('progVal').textContent = pct + '%';
+  document.getElementById('progBar').style.width = pct + '%';
+}
+
+// ══════════════════════════════════════════════════════════
+// STREAK
+// ══════════════════════════════════════════════════════════
+function updateStreak() {
+  const today = new Date().toISOString().slice(0,10);
+  const key = getTodayKey();
+  const data = getState(key, { tasks: [] });
+  const anyDone = data.tasks.some(t => t.done);
+
+  let streak = getState('streak', { count: 0, lastDate: '' });
+  if (anyDone && streak.lastDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    streak.count = streak.lastDate === yesterday ? streak.count + 1 : 1;
+    streak.lastDate = today;
+    setState('streak', streak);
+  }
+  document.getElementById('streakNum').textContent = streak.count;
+}
+
+function showStreakInfo() {
+  const streak = getState('streak', { count: 0 });
+  showToast(`🔥 ${streak.count} day streak — keep it up!`);
+}
+
+// ══════════════════════════════════════════════════════════
+// QUOTE — Claude API
+// ══════════════════════════════════════════════════════════
+async function fetchQuote() {
+  const btn = document.getElementById('quoteRefreshBtn');
+  const icon = document.getElementById('quoteIcon');
+  btn.classList.add('loading');
+  icon.classList.add('spinning');
+  document.getElementById('quoteText').textContent = 'Fetching inspiration…';
+  document.getElementById('quoteAuthor').textContent = '';
+
+  const subjects = ['Medicine','Surgery','Pathology','PSM','OBG'];
+  const subj = subjects[Math.floor(Math.random() * subjects.length)];
+  const prompts = [
+    `Write a single powerful motivational paragraph (3-4 sentences) for a medical student preparing for NEET PG who is studying ${subj} today. Make it specific to medicine, deeply inspiring, and focused on discipline and mastery. End with the name of a real doctor, scientist, or philosopher it could be attributed to. Format: just the paragraph, then on a new line: — Name, Title`,
+    `Give a profound quote or short motivational paragraph for a doctor preparing for NEET PG. Focus on perseverance, the art of medicine, or scientific excellence. Real or paraphrased from a real person. Format: paragraph then — Attribution`,
+    `Write an intense 2-3 sentence motivational message for a medical postgraduate aspirant working 10 hours a day. Reference the weight of the knowledge required, the lives that depend on it, or the satisfaction of mastery. End with — a real person's name and credential.`,
+  ];
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompts[Math.floor(Math.random() * prompts.length)] }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+    const lines = text.trim().split('\n').filter(l => l.trim());
+    const lastLine = lines[lines.length - 1];
+    const isAttr = lastLine.startsWith('—') || lastLine.startsWith('-');
+    const quoteBody = isAttr ? lines.slice(0, -1).join(' ') : text;
+    const author = isAttr ? lastLine.replace(/^[-—]\s*/, '') : '';
+    document.getElementById('quoteText').textContent = quoteBody;
+    document.getElementById('quoteAuthor').textContent = author ? `— ${author}` : '';
+    setState('lastQuote', { text: quoteBody, author, date: new Date().toISOString().slice(0,10) });
+  } catch {
+    const fallbacks = [
+      { text: "Every page you read tonight is a patient's life you'll save tomorrow. The knowledge feels abstract now, but it will be visceral — real — at the bedside. Study like that patient is already waiting.", author: "William Osler, adapted" },
+      { text: "Rank is not an accident. It is the sum of every hour when you chose discipline over comfort, clarity over confusion, and mastery over mediocrity. You are building that sum right now.", author: "Harvey Cushing, adapted" },
+      { text: "The difference between the good physician and the great one is not intelligence — it is the hunger to understand completely, and the patience to pursue that understanding until it becomes reflex.", author: "Francis Weld Peabody" },
+    ];
+    const f = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    document.getElementById('quoteText').textContent = f.text;
+    document.getElementById('quoteAuthor').textContent = '— ' + f.author;
+  }
+  btn.classList.remove('loading');
+  icon.classList.remove('spinning');
+}
+
+function loadQuote() {
+  const saved = getState('lastQuote', null);
+  const today = new Date().toISOString().slice(0,10);
+  if (saved && saved.date === today && saved.text) {
+    document.getElementById('quoteText').textContent = saved.text;
+    document.getElementById('quoteAuthor').textContent = saved.author ? '— ' + saved.author : '';
+  } else {
+    fetchQuote();
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// POMODORO
+// ══════════════════════════════════════════════════════════
+let pomoState = {
+  running: false, timer: null,
+  focusMin: 50, breakMin: 10,
+  totalSec: 50*60, remainSec: 50*60,
+  isBreak: false, sessions: 0, maxSessions: 4
+};
+
+function setPomoType(focus, brk, label) {
+  resetPomo();
+  pomoState.focusMin = focus; pomoState.breakMin = brk;
+  pomoState.totalSec = focus * 60; pomoState.remainSec = focus * 60;
+  updatePomoDisplay();
+  document.querySelectorAll('.pomo-type-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function togglePomo() {
+  if (pomoState.running) {
+    clearInterval(pomoState.timer);
+    pomoState.running = false;
+    document.getElementById('pomoBtn').textContent = 'Resume';
+  } else {
+    pomoState.timer = setInterval(tickPomo, 1000);
+    pomoState.running = true;
+    document.getElementById('pomoBtn').textContent = 'Pause';
+  }
+}
+
+function tickPomo() {
+  if (pomoState.remainSec <= 0) {
+    clearInterval(pomoState.timer);
+    pomoState.running = false;
+    if (!pomoState.isBreak) {
+      pomoState.sessions++;
+      renderPomoSessions();
+      showToast('Focus session done! Take a break 🎉');
+      pomoState.isBreak = true;
+      pomoState.totalSec = pomoState.breakMin * 60;
+      pomoState.remainSec = pomoState.breakMin * 60;
+      document.getElementById('pomoCircle').style.stroke = '#22c55e';
+      document.getElementById('pomoMode').textContent = 'Break';
+    } else {
+      showToast('Break over! Back to focus 💪');
+      pomoState.isBreak = false;
+      pomoState.totalSec = pomoState.focusMin * 60;
+      pomoState.remainSec = pomoState.focusMin * 60;
+      document.getElementById('pomoCircle').style.stroke = 'var(--gold)';
+      document.getElementById('pomoMode').textContent = 'Focus';
+    }
+    pomoState.timer = setInterval(tickPomo, 1000);
+    pomoState.running = true;
+    document.getElementById('pomoBtn').textContent = 'Pause';
+  } else {
+    pomoState.remainSec--;
+  }
+  updatePomoDisplay();
+}
+
+function updatePomoDisplay() {
+  const m = Math.floor(pomoState.remainSec / 60).toString().padStart(2,'0');
+  const s = (pomoState.remainSec % 60).toString().padStart(2,'0');
+  document.getElementById('pomoTime').textContent = `${m}:${s}`;
+  const pct = 1 - (pomoState.remainSec / pomoState.totalSec);
+  const circ = 2 * Math.PI * 45;
+  document.getElementById('pomoCircle').style.strokeDashoffset = circ * (1 - pct);
+}
+
+function resetPomo() {
+  clearInterval(pomoState.timer);
+  pomoState.running = false;
+  pomoState.isBreak = false;
+  pomoState.remainSec = pomoState.focusMin * 60;
+  pomoState.totalSec = pomoState.focusMin * 60;
+  document.getElementById('pomoBtn').textContent = 'Start';
+  document.getElementById('pomoCircle').style.stroke = 'var(--gold)';
+  document.getElementById('pomoMode').textContent = 'Focus';
+  updatePomoDisplay();
+}
+
+function renderPomoSessions() {
+  const container = document.getElementById('pomoSessions');
+  container.innerHTML = '';
+  for (let i = 0; i < pomoState.maxSessions; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'session-dot' + (i < pomoState.sessions ? ' done' : '');
+    container.appendChild(dot);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// NEXT DAY PREVIEW
+// ══════════════════════════════════════════════════════════
+function renderNextDay() {
+  const tomorrow = new Date(Date.now() + 86400000);
+  const dayIdx = tomorrow.getDay();
+  const week = getWeekNum();
+  const weekBlock = week <= 2 ? 1 : week <= 4 ? 3 : week <= 6 ? 5 : 7;
+  const subjs = SCHEDULE.weekSubjects[weekBlock]?.[dayIdx] || ['Medicine','Surgery','OBG'];
+
+  const colors = [SUBJECTS.find(s=>s.name===subjs[0])?.color || '#3b82f6',
+                  SUBJECTS.find(s=>s.name===subjs[1])?.color || '#22c55e',
+                  SUBJECTS.find(s=>s.name===subjs[2])?.color || '#a78bfa'];
+
+  const topics = [
+    'Primary learning blocks · MCQ session · PYQ block',
+    'Primary learning · Active recall drills',
+    'Revision / Spaced repetition · Error log'
+  ];
+
+  const container = document.getElementById('nextSubjects');
+  container.innerHTML = '';
+  subjs.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'next-subj';
+    div.innerHTML = `
+      <div class="subj-color" style="background:${colors[i]}"></div>
+      <div class="subj-info">
+        <div class="subj-name">${s}</div>
+        <div class="subj-topics">${topics[i]}</div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// WEEKLY GOALS
+// ══════════════════════════════════════════════════════════
+function renderWeeklyGoals() {
+  const week = getWeekNum();
+  const goals = WEEKLY_GOALS[Math.min(week, 8)] || WEEKLY_GOALS[8];
+  const doneKey = 'weekgoals_' + week;
+  const doneState = getState(doneKey, {});
+
+  const container = document.getElementById('weeklyGoals');
+  container.innerHTML = '';
+  goals.forEach((goal, i) => {
+    const done = !!doneState[i];
+    const div = document.createElement('div');
+    div.className = 'weekly-item' + (done ? ' done-goal' : '');
+    div.innerHTML = `
+      <div class="weekly-num">${i+1}</div>
+      <div class="weekly-text">${goal}</div>
+      <div class="weekly-check" onclick="toggleWeekGoal(${i})">${done ? '✓' : ''}</div>`;
+    container.appendChild(div);
+  });
+}
+
+function toggleWeekGoal(i) {
+  const week = getWeekNum();
+  const doneKey = 'weekgoals_' + week;
+  const doneState = getState(doneKey, {});
+  doneState[i] = !doneState[i];
+  setState(doneKey, doneState);
+  renderWeeklyGoals();
+}
+
+// ══════════════════════════════════════════════════════════
+// RECALL WIDGET — Claude API
+// ══════════════════════════════════════════════════════════
+let currentRecallIdx = Math.floor(Math.random() * RECALL_BANK.length);
+
+async function fetchRecall() {
+  const q = document.getElementById('recallQ');
+  const sub = document.getElementById('recallSub');
+  const ans = document.getElementById('recallAns');
+  const nav = document.getElementById('recallNav');
+  ans.classList.remove('show');
+  nav.style.display = 'none';
+
+  const week = getWeekNum();
+  const weekBlock = week <= 2 ? 1 : week <= 4 ? 3 : week <= 6 ? 5 : 7;
+  const daySubjs = SCHEDULE.weekSubjects[weekBlock]?.[new Date().getDay()] || ['Medicine'];
+  const currentSubj = daySubjs[0];
+
+  q.textContent = 'Generating question…';
+  sub.textContent = '';
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{
+          role: "user",
+          content: `Generate a single high-yield active recall question for NEET PG / INI-CET about ${currentSubj}. 
+The question should be a clinical vignette or concept-based question that requires genuine understanding, not just memory.
+Format your response as:
+QUESTION: [the question]
+SUBJECT: [subject/topic]
+ANSWER: [concise but complete answer in 2-4 sentences]`
+        }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+    const qMatch = text.match(/QUESTION:\s*(.+?)(?=SUBJECT:|$)/s);
+    const sMatch = text.match(/SUBJECT:\s*(.+?)(?=ANSWER:|$)/s);
+    const aMatch = text.match(/ANSWER:\s*(.+?)$/s);
+    q.textContent = qMatch?.[1]?.trim() || text;
+    sub.textContent = sMatch?.[1]?.trim() || currentSubj;
+    document.getElementById('revealBtn_ans').textContent = aMatch?.[1]?.trim() || '';
+    document.querySelector('.reveal-btn').onclick = () => revealAnswer(aMatch?.[1]?.trim() || '');
+  } catch {
+    const item = RECALL_BANK[currentRecallIdx];
+    q.textContent = item.q;
+    sub.textContent = item.subj;
+    document.querySelector('.reveal-btn').onclick = () => revealAnswer(item.a);
+    currentRecallIdx = (currentRecallIdx + 1) % RECALL_BANK.length;
+  }
+  document.querySelector('.reveal-btn').onclick = function() {
+    const aMatch = document.getElementById('recallAns');
+    aMatch.classList.toggle('show');
+    nav.style.display = 'flex';
+  };
+}
+
+function revealAnswer(ans) {
+  const aEl = document.getElementById('recallAns');
+  aEl.textContent = ans;
+  aEl.classList.add('show');
+  document.getElementById('recallNav').style.display = 'flex';
+}
+
+function nextRecall(type) {
+  if (type === 'hard') showToast('📌 Flagged for re-review');
+  else showToast('✓ Got it — moving on');
+  document.getElementById('recallAns').classList.remove('show');
+  document.getElementById('recallNav').style.display = 'none';
+  fetchRecall();
+}
+
+// Override reveal button properly
+document.querySelector('.reveal-btn').onclick = function() {
+  const aEl = document.getElementById('recallAns');
+  aEl.classList.toggle('show');
+  document.getElementById('recallNav').style.display = aEl.classList.contains('show') ? 'flex' : 'none';
+};
+
+// ══════════════════════════════════════════════════════════
+// ERROR LOG
+// ══════════════════════════════════════════════════════════
+function renderErrorLog() {
+  const errors = getState('errorLog_' + new Date().toISOString().slice(0,10), []);
+  const container = document.getElementById('errorList');
+  container.innerHTML = '';
+  if (!errors.length) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:8px 0;">No errors logged today — keep going!</div>';
+    return;
+  }
+  errors.forEach((err, i) => {
+    const div = document.createElement('div');
+    div.className = 'error-item';
+    div.innerHTML = `<span class="error-subj">${err.subj}</span>${err.text}<span class="error-del" onclick="deleteError(${i})">×</span>`;
+    container.appendChild(div);
+  });
+}
+
+function addError() {
+  const subj = document.getElementById('errorSubj').value;
+  const text = document.getElementById('errorText').value.trim();
+  if (!text) return;
+  const key = 'errorLog_' + new Date().toISOString().slice(0,10);
+  const errors = getState(key, []);
+  errors.unshift({ subj, text, time: new Date().toLocaleTimeString() });
+  setState(key, errors);
+  document.getElementById('errorText').value = '';
+  renderErrorLog();
+  showToast('Error logged 📝');
+}
+
+function deleteError(i) {
+  const key = 'errorLog_' + new Date().toISOString().slice(0,10);
+  const errors = getState(key, []);
+  errors.splice(i, 1);
+  setState(key, errors);
+  renderErrorLog();
+}
+
+// ══════════════════════════════════════════════════════════
+// SUBJECT PROGRESS
+// ══════════════════════════════════════════════════════════
+function renderSubjectBars() {
+  const prog = getState('subjectProgress', {});
+  const container = document.getElementById('subjBars');
+  container.innerHTML = '';
+  SUBJECTS.forEach(subj => {
+    const pct = prog[subj.name] || 0;
+    const div = document.createElement('div');
+    div.className = 'subj-bar-row';
+    div.innerHTML = `
+      <div class="subj-bar-label">
+        <span class="subj-bar-name">${subj.name}</span>
+        <span class="subj-bar-pct">${pct}%</span>
+      </div>
+      <div class="subj-bar-track">
+        <div class="subj-bar-fill" style="width:${pct}%; background:${subj.color}"></div>
+      </div>`;
+    div.onclick = () => updateSubjectProgress(subj.name);
+    div.style.cursor = 'pointer';
+    div.title = 'Click to update progress';
+    container.appendChild(div);
+  });
+}
+
+function updateSubjectProgress(name) {
+  const prog = getState('subjectProgress', {});
+  const current = prog[name] || 0;
+  const newVal = prompt(`${name} progress (0–100%):`, current);
+  if (newVal !== null && !isNaN(newVal)) {
+    prog[name] = Math.max(0, Math.min(100, parseInt(newVal)));
+    setState('subjectProgress', prog);
+    renderSubjectBars();
+    showToast(`${name} updated to ${prog[name]}%`);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// GT TRACKER
+// ══════════════════════════════════════════════════════════
+function renderGTList() {
+  const gts = getState('gtScores', []);
+  const container = document.getElementById('gtList');
+  container.innerHTML = '';
+  if (!gts.length) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:6px 0;">No GTs logged yet. First one at end of Week 2!</div>';
+    return;
+  }
+  gts.slice(-6).forEach(gt => {
+    const pct = parseFloat(gt.score);
+    const scoreClass = pct >= 75 ? 'good' : pct >= 55 ? 'mid' : 'bad';
+    const div = document.createElement('div');
+    div.className = 'gt-item' + (pct >= 55 ? ' done-gt' : '');
+    div.innerHTML = `<span class="gt-name">${gt.name}</span><span class="gt-score ${scoreClass}">${gt.score}%</span>`;
+    container.appendChild(div);
+  });
+}
+
+function addGT() {
+  const name = document.getElementById('gtName').value.trim();
+  const score = document.getElementById('gtScore').value.trim();
+  if (!name || !score) return;
+  const gts = getState('gtScores', []);
+  gts.push({ name, score, date: new Date().toISOString().slice(0,10) });
+  setState('gtScores', gts);
+  document.getElementById('gtName').value = '';
+  document.getElementById('gtScore').value = '';
+  renderGTList();
+  showToast(`GT logged: ${name} — ${score}%`);
+}
+
+// ══════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+function init() {
+  initDatePhase();
+  renderSchedule();
+  renderChecklist();
+  updateStreak();
+  renderPomoSessions();
+  updatePomoDisplay();
+  renderNextDay();
+  renderWeeklyGoals();
+  renderErrorLog();
+  renderSubjectBars();
+  renderGTList();
+  loadQuote();
+  highlightCurrentBlock();
+}
+
+init();
+</script>
+
+</body>
+</html>
