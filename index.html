@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NEET PG Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ─── RESET & BASE ───────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+
+:root{
+  --bg:#09090f;
+  --surface:#111118;
+  --card:#16161f;
+  --card-hover:#1c1c27;
+  --border:#22222e;
+  --border-lit:#2e2e3e;
+  --amber:#f0b429;
+  --amber-dim:rgba(240,180,41,0.1);
+  --amber-dim2:rgba(240,180,41,0.05);
+  --amber-glow:rgba(240,180,41,0.15);
+  --text:#eeeef5;
+  --text-2:#8888a8;
+  --text-3:#4a4a66;
+  --green:#34d399;
+  --red:#f87171;
+  --blue:#60a5fa;
+  --purple:#c084fc;
+  --teal:#2dd4bf;
+  --r:14px;
+  --r-sm:9px;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Instrument Sans',sans-serif;
+  min-height:100vh;
+  padding:16px;
+  background-image:
+    radial-gradient(ellipse 70% 30% at 50% 0%,rgba(240,180,41,0.04) 0%,transparent 60%);
+}
+
+/* ─── TYPOGRAPHY ─────────────────────────────────────────────────────── */
+.serif{font-family:'Fraunces',Georgia,serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-3)}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-lit);border-radius:3px}
+
+/* ─── CARD ───────────────────────────────────────────────────────────── */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:20px;
+  transition:border-color .2s;
+}
+.card:hover{border-color:var(--border-lit)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+
+/* ─── HEADER ─────────────────────────────────────────────────────────── */
+#app-header{
+  display:grid;
+  grid-template-columns:1fr auto;
+  grid-template-rows:auto auto;
+  gap:12px 16px;
+  margin-bottom:16px;
+  align-items:center;
+}
+.hd-left{display:flex;align-items:center;gap:12px}
+.logo{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--amber) 0%,#d97706 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces';font-size:17px;color:#09090f;font-weight:600;
+}
+.app-name{font-family:'Fraunces';font-size:18px;color:var(--text)}
+.app-sub{font-size:11px;color:var(--text-3);margin-top:1px}
+.hd-right{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+#live-clock{
+  font-family:'JetBrains Mono';font-size:12px;color:var(--amber);
+  background:var(--amber-dim);border:1px solid rgba(240,180,41,0.2);
+  padding:5px 10px;border-radius:7px;white-space:nowrap;
+}
+#streak-pill{
+  display:flex;align-items:center;gap:5px;
+  background:var(--card);border:1px solid var(--border);
+  padding:5px 11px;border-radius:7px;font-size:12px;color:var(--text-2);
+  cursor:pointer;white-space:nowrap;transition:border-color .2s;
+}
+#streak-pill:hover{border-color:var(--amber)}
+.streak-n{font-family:'JetBrains Mono';font-size:14px;color:var(--amber);font-weight:500}
+
+/* Phase bar spans full width */
+#phase-bar-wrap{
+  grid-column:1/-1;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:12px 16px;
+}
+.phase-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.phase-name{font-family:'Fraunces';font-size:15px;color:var(--amber)}
+.phase-wk{font-size:11px;color:var(--text-3)}
+.phase-sub{font-size:11px;color:var(--text-2);margin-bottom:8px}
+.pbar-track{height:4px;background:var(--border);border-radius:4px;overflow:hidden}
+.pbar-fill{height:100%;background:linear-gradient(90deg,var(--amber),#f97316);border-radius:4px;transition:width .8s ease}
+
+/* ─── MAIN GRID ──────────────────────────────────────────────────────── */
+#main{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+
+/* Desktop 3-col layout */
+@media(min-width:900px){
+  body{padding:20px 24px}
+  #main{
+    grid-template-columns:1fr 1fr 320px;
+    grid-template-areas:
+      "quote   quote   quote"
+      "sched   check   pomo"
+      "tom     weekly  recall"
+      "errlog  subjpg  gt";
+  }
+  #quote-card  {grid-area:quote}
+  #sched-card  {grid-area:sched}
+  #check-card  {grid-area:check}
+  #pomo-card   {grid-area:pomo}
+  #tom-card    {grid-area:tom}
+  #weekly-card {grid-area:weekly}
+  #recall-card {grid-area:recall}
+  #err-card    {grid-area:errlog}
+  #subj-card   {grid-area:subjpg}
+  #gt-card     {grid-area:gt}
+}
+
+/* ─── QUOTE CARD ─────────────────────────────────────────────────────── */
+#quote-card{position:relative;overflow:hidden}
+#quote-card::before{
+  content:'\201C';
+  position:absolute;top:-24px;left:14px;
+  font-family:'Fraunces';font-size:140px;
+  color:rgba(240,180,41,0.06);line-height:1;pointer-events:none;
+}
+#quote-text{
+  font-family:'Fraunces';font-size:clamp(15px,2.2vw,19px);
+  font-style:italic;line-height:1.6;color:var(--text);
+  min-height:54px;margin-bottom:10px;
+}
+#quote-author{font-size:11px;color:var(--amber);font-weight:500;letter-spacing:.5px}
+#quote-refresh{
+  position:absolute;top:16px;right:16px;
+  background:var(--amber-dim);border:1px solid rgba(240,180,41,0.2);
+  color:var(--amber);padding:5px 11px;border-radius:6px;
+  font-size:11px;font-family:'Instrument Sans';font-weight:500;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:4px;
+}
+#quote-refresh:hover{background:var(--amber-glow)}
+#quote-refresh.loading{opacity:.5;pointer-events:none}
+.spin{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── SCHEDULE CARD ──────────────────────────────────────────────────── */
+.sched-date{
+  font-family:'Fraunces';font-size:22px;color:var(--text);
+  margin-bottom:14px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+}
+.sched-day{color:var(--amber)}
+.sched-dstr{font-size:14px;color:var(--text-2)}
+.time-list{display:flex;flex-direction:column;gap:4px;max-height:380px;overflow-y:auto;padding-right:2px}
+.tb{
+  display:grid;grid-template-columns:76px 1fr;gap:8px;
+  padding:9px 10px;border-radius:var(--r-sm);border:1px solid transparent;
+  transition:all .2s;position:relative;
+}
+.tb:hover{background:var(--amber-dim2);border-color:var(--border)}
+.tb.active{background:rgba(240,180,41,0.07);border-color:rgba(240,180,41,0.22)}
+.tb.active::before{
+  content:'';position:absolute;left:0;top:20%;height:60%;
+  width:3px;background:var(--amber);border-radius:0 3px 3px 0;
+}
+.tb.past{opacity:.38}
+.tb-time{font-family:'JetBrains Mono';font-size:9px;color:var(--text-3);padding-top:3px;line-height:1.4}
+.tb-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.3}
+.tb-sub{font-size:10px;color:var(--text-2);margin-top:2px;line-height:1.4}
+.tag{
+  display:inline-block;font-size:8px;font-weight:600;letter-spacing:.8px;
+  padding:2px 6px;border-radius:3px;margin-top:3px;text-transform:uppercase;
+}
+.tag-learn{background:rgba(96,165,250,.12);color:#93c5fd}
+.tag-mcq  {background:rgba(52,211,153,.12);color:#6ee7b7}
+.tag-rev  {background:rgba(240,180,41,.12);color:var(--amber)}
+.tag-pyq  {background:rgba(192,132,252,.12);color:#d8b4fe}
+.tag-btr  {background:rgba(251,146,60,.12);color:#fdba74}
+.tag-break{background:rgba(100,116,139,.12);color:#94a3b8}
+.tag-gt   {background:rgba(248,113,113,.12);color:#fca5a5}
+
+/* ─── CHECKLIST CARD ─────────────────────────────────────────────────── */
+.cl-list{display:flex;flex-direction:column;gap:5px;max-height:320px;overflow-y:auto;padding-right:2px}
+.cl-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:9px 11px;border-radius:var(--r-sm);border:1px solid var(--border);
+  cursor:pointer;transition:all .2s;user-select:none;
+}
+.cl-item:hover{background:var(--card-hover)}
+.cl-item.done{opacity:.42;border-color:transparent}
+.cl-box{
+  width:17px;height:17px;border-radius:4px;border:1.5px solid var(--border-lit);
+  flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.cl-item.done .cl-box{background:var(--amber);border-color:var(--amber)}
+.cl-item.done .cl-box::after{content:'✓';font-size:10px;color:#09090f;font-weight:700}
+.cl-text{font-size:12px;color:var(--text);line-height:1.4;transition:color .2s}
+.cl-item.done .cl-text{text-decoration:line-through;color:var(--text-3)}
+.prog-section{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.prog-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.prog-lbl{font-size:11px;color:var(--text-2)}
+.prog-pct{font-family:'JetBrains Mono';font-size:12px;color:var(--amber)}
+.prog-track{height:5px;background:var(--border);border-radius:5px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--amber),#f97316);border-radius:5px;transition:width .4s ease}
+.add-row{display:flex;gap:7px;margin-top:10px}
+.add-input{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:8px 11px;color:var(--text);
+  font-family:'Instrument Sans';font-size:11px;outline:none;transition:border-color .2s;
+  min-width:0;
+}
+.add-input:focus{border-color:rgba(240,180,41,.35)}
+.add-input::placeholder{color:var(--text-3)}
+.add-btn{
+  background:var(--amber-dim);border:1px solid rgba(240,180,41,.22);
+  color:var(--amber);width:34px;height:34px;border-radius:8px;
+  font-size:20px;cursor:pointer;line-height:1;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.add-btn:hover{background:var(--amber-glow)}
+
+/* ─── POMODORO ───────────────────────────────────────────────────────── */
+#pomo-card{display:flex;flex-direction:column;align-items:center}
+.pomo-ring-wrap{position:relative;width:150px;height:150px;margin:8px auto 12px}
+.pomo-svg{transform:rotate(-90deg);width:150px;height:150px}
+.pr-bg{fill:none;stroke:var(--border);stroke-width:7}
+.pr-fill{
+  fill:none;stroke:var(--amber);stroke-width:7;stroke-linecap:round;
+  stroke-dasharray:408;stroke-dashoffset:408;
+  transition:stroke-dashoffset .6s ease,stroke .3s;
+  filter:drop-shadow(0 0 8px rgba(240,180,41,.45));
+}
+.pr-fill.brk{stroke:var(--green)}
+.pomo-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+#pomo-time{font-family:'JetBrains Mono';font-size:32px;font-weight:500;color:var(--text);letter-spacing:-1px}
+#pomo-mode{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-top:2px}
+.pomo-btns{display:flex;gap:8px;margin-bottom:10px}
+.pbtn{
+  padding:8px 22px;border-radius:8px;font-size:12px;font-weight:600;
+  font-family:'Instrument Sans';cursor:pointer;transition:all .2s;border:1px solid;
+}
+.pbtn-p{background:var(--amber);color:#09090f;border-color:var(--amber)}
+.pbtn-p:hover{background:#e5a824}
+.pbtn-s{background:transparent;color:var(--text-2);border-color:var(--border)}
+.pbtn-s:hover{border-color:var(--border-lit);color:var(--text)}
+.pomo-dots{display:flex;gap:6px;margin-bottom:14px}
+.pdot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--border-lit);transition:all .3s}
+.pdot.done{background:var(--amber);border-color:var(--amber)}
+.pomo-modes{display:flex;gap:6px;width:100%;padding-top:12px;border-top:1px solid var(--border)}
+.pmb{
+  flex:1;text-align:center;padding:7px 4px;border-radius:7px;
+  font-size:11px;font-weight:500;cursor:pointer;
+  border:1px solid var(--border);color:var(--text-2);transition:all .2s;
+}
+.pmb.act{background:var(--amber-dim);border-color:rgba(240,180,41,.3);color:var(--amber)}
+
+/* ─── TOMORROW CARD ──────────────────────────────────────────────────── */
+.next-list{display:flex;flex-direction:column;gap:7px}
+.next-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 13px;border-radius:var(--r-sm);
+  background:var(--surface);border:1px solid var(--border);
+}
+.next-bar{width:4px;border-radius:3px;flex-shrink:0;align-self:stretch;min-height:32px}
+.next-name{font-size:13px;font-weight:500;color:var(--text)}
+.next-topics{font-size:10px;color:var(--text-2);margin-top:2px;line-height:1.4}
+
+/* ─── WEEKLY GOALS ───────────────────────────────────────────────────── */
+.wg-list{display:flex;flex-direction:column;gap:6px}
+.wg-item{
+  display:flex;align-items:flex-start;gap:9px;
+  padding:9px 12px;border-radius:var(--r-sm);border:1px solid var(--border);
+  cursor:pointer;transition:all .2s;
+}
+.wg-item.done-g{border-color:rgba(52,211,153,.2);background:rgba(52,211,153,.04)}
+.wg-num{
+  width:20px;height:20px;border-radius:5px;background:var(--amber-dim);
+  color:var(--amber);font-size:10px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.wg-text{font-size:11px;color:var(--text-2);line-height:1.5;flex:1}
+.wg-chk{
+  width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border-lit);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;font-size:9px;font-weight:700;color:white;
+}
+.wg-item.done-g .wg-chk{background:var(--green);border-color:var(--green)}
+
+/* ─── RECALL CARD ────────────────────────────────────────────────────── */
+#recall-q{
+  font-size:13px;color:var(--text);line-height:1.65;min-height:70px;
+  font-style:italic;margin-bottom:8px;
+}
+#recall-subj{font-size:10px;color:var(--text-3);margin-bottom:12px}
+.recall-reveal{
+  width:100%;padding:9px;border-radius:8px;
+  background:var(--amber-dim);border:1px solid rgba(240,180,41,.2);
+  color:var(--amber);font-size:11px;font-weight:600;
+  font-family:'Instrument Sans';cursor:pointer;transition:all .2s;margin-bottom:8px;
+}
+.recall-reveal:hover{background:var(--amber-glow)}
+#recall-ans{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:11px;font-size:11px;color:var(--text-2);
+  line-height:1.65;display:none;
+}
+#recall-ans.show{display:block}
+.recall-verdict{display:none;gap:7px;margin-top:8px}
+.recall-verdict.show{display:flex}
+.rv-btn{
+  flex:1;padding:7px;border-radius:7px;font-size:11px;font-weight:600;
+  font-family:'Instrument Sans';cursor:pointer;border:1px solid;transition:all .2s;
+}
+.rv-got{border-color:rgba(52,211,153,.3);color:var(--green);background:rgba(52,211,153,.06)}
+.rv-got:hover{background:rgba(52,211,153,.12)}
+.rv-miss{border-color:rgba(248,113,113,.3);color:var(--red);background:rgba(248,113,113,.06)}
+.rv-miss:hover{background:rgba(248,113,113,.12)}
+
+/* ─── ERROR LOG ──────────────────────────────────────────────────────── */
+.err-input-row{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.err-sel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:7px;padding:7px 10px;color:var(--text);
+  font-family:'Instrument Sans';font-size:11px;outline:none;cursor:pointer;
+  min-width:120px;
+}
+.err-sel:focus{border-color:rgba(248,113,113,.35)}
+.err-txt{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:7px;padding:7px 10px;color:var(--text);
+  font-family:'Instrument Sans';font-size:11px;outline:none;min-width:120px;
+}
+.err-txt:focus{border-color:rgba(248,113,113,.35)}
+.err-txt::placeholder{color:var(--text-3)}
+.err-log-btn{
+  background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);
+  color:var(--red);padding:7px 13px;border-radius:7px;
+  font-size:11px;font-weight:600;font-family:'Instrument Sans';cursor:pointer;white-space:nowrap;
+}
+.err-list{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
+.err-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:8px 11px;border-radius:var(--r-sm);
+  background:rgba(248,113,113,.04);border:1px solid rgba(248,113,113,.1);
+  font-size:11px;color:var(--text-2);
+}
+.err-subj{
+  font-size:9px;font-weight:600;color:var(--red);
+  background:rgba(248,113,113,.1);padding:2px 6px;border-radius:3px;
+  flex-shrink:0;white-space:nowrap;align-self:flex-start;margin-top:1px;
+}
+.err-del{margin-left:auto;color:var(--text-3);cursor:pointer;flex-shrink:0;padding-left:6px;font-size:13px;transition:color .2s}
+.err-del:hover{color:var(--red)}
+.err-empty{font-size:11px;color:var(--text-3);padding:6px 0}
+
+/* ─── SUBJECT PROGRESS ───────────────────────────────────────────────── */
+.sp-bars{display:flex;flex-direction:column;gap:9px}
+.sp-row{cursor:pointer}
+.sp-row:hover .sp-name{color:var(--amber)}
+.sp-lbl{display:flex;justify-content:space-between;margin-bottom:4px}
+.sp-name{font-size:11px;color:var(--text-2);transition:color .2s}
+.sp-pct{font-family:'JetBrains Mono';font-size:10px;color:var(--text-3)}
+.sp-track{height:4px;background:var(--border);border-radius:4px;overflow:hidden}
+.sp-fill{height:100%;border-radius:4px;transition:width .6s ease}
+
+/* ─── GT TRACKER ─────────────────────────────────────────────────────── */
+.gt-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;max-height:200px;overflow-y:auto}
+.gt-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;border-radius:var(--r-sm);border:1px solid var(--border);
+  font-size:12px;
+}
+.gt-item.g-good{border-color:rgba(52,211,153,.2);background:rgba(52,211,153,.04)}
+.gt-score{font-family:'JetBrains Mono';font-size:12px}
+.s-good{color:var(--green)}.s-mid{color:var(--amber)}.s-bad{color:var(--red)}
+.gt-add{display:flex;gap:6px}
+.gt-inp{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:7px;padding:7px 9px;color:var(--text);
+  font-family:'Instrument Sans';font-size:11px;outline:none;min-width:0;
+}
+.gt-inp:focus{border-color:rgba(52,211,153,.35)}
+.gt-inp::placeholder{color:var(--text-3)}
+.gt-add-btn{
+  background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);
+  color:var(--green);padding:7px 12px;border-radius:7px;
+  font-size:11px;font-weight:600;font-family:'Instrument Sans';cursor:pointer;white-space:nowrap;
+}
+
+/* ─── TOAST ──────────────────────────────────────────────────────────── */
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--card);border:1px solid var(--border);padding:10px 18px;
+  border-radius:9px;font-size:12px;color:var(--text);
+  opacity:0;pointer-events:none;transition:opacity .25s;z-index:999;white-space:nowrap;
+}
+#toast.show{opacity:1}
+
+/* ─── FADE IN ────────────────────────────────────────────────────────── */
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:up .35s ease both}
+#quote-card{animation-delay:.0s}
+#sched-card{animation-delay:.05s}
+#check-card{animation-delay:.1s}
+#pomo-card {animation-delay:.12s}
+#tom-card  {animation-delay:.15s}
+#weekly-card{animation-delay:.18s}
+#recall-card{animation-delay:.2s}
+#err-card  {animation-delay:.22s}
+#subj-card {animation-delay:.25s}
+#gt-card   {animation-delay:.27s}
+</style>
+
+</head>
+<body>
+
+<!-- ═══ HEADER ══════════════════════════════════════════════════════════ -->
+
+<header id="app-header">
+  <div class="hd-left">
+    <div class="logo">N</div>
+    <div>
+      <div class="app-name">NEET PG Command Centre</div>
+      <div class="app-sub">Rank &lt;800 · Your daily operations base</div>
+    </div>
+  </div>
+  <div class="hd-right">
+    <div id="live-clock">00:00:00</div>
+    <div id="streak-pill" onclick="toastMsg('🔥 Keep the streak alive!')">
+      🔥 <span class="streak-n" id="streak-n">0</span>&nbsp;day
+    </div>
+  </div>
+  <div id="phase-bar-wrap">
+    <div class="phase-top">
+      <span class="phase-name" id="phase-name">Phase 1 — Small Subjects</span>
+      <span class="phase-wk" id="phase-wk">Week 1 of 8</span>
+    </div>
+    <div class="phase-sub" id="phase-sub">PSM · ENT · Forensics · Ophthalmology · Dermatology</div>
+    <div class="pbar-track"><div class="pbar-fill" id="pbar" style="width:2%"></div></div>
+  </div>
+</header>
+
+<!-- ═══ MAIN GRID ════════════════════════════════════════════════════════ -->
+
+<main id="main">
+
+  <!-- QUOTE -->
+
+  <div class="card" id="quote-card">
+    <div class="label" style="margin-bottom:14px"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:8px;vertical-align:middle"></span>Daily Fuel</div>
+    <button id="quote-refresh" onclick="fetchQuote()"><span id="qr-icon">↻</span> New</button>
+    <div id="quote-text" class="serif">Loading your daily motivation…</div>
+    <div id="quote-author" style="margin-top:8px"></div>
+  </div>
+
+  <!-- SCHEDULE -->
+
+  <div class="card" id="sched-card">
+    <div class="label" style="margin-bottom:2px"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:8px;vertical-align:middle"></span>Today's Schedule</div>
+    <div class="sched-date serif">
+      <span class="sched-day" id="sched-day">Monday</span>
+      <span class="sched-dstr" id="sched-date"></span>
+    </div>
+    <div class="time-list" id="time-list"></div>
+  </div>
+
+  <!-- CHECKLIST -->
+
+  <div class="card" id="check-card">
+    <div class="card-head">
+      <div class="label"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:8px;vertical-align:middle"></span>Today's Checklist</div>
+    </div>
+    <div class="cl-list" id="cl-list"></div>
+    <div class="prog-section">
+      <div class="prog-row">
+        <span class="prog-lbl">Completion</span>
+        <span class="prog-pct" id="prog-pct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="add-row">
+      <input class="add-input" id="task-inp" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addTask()">
+      <button class="add-btn" onclick="addTask()">+</button>
+    </div>
+  </div>
+
+  <!-- POMODORO -->
+
+  <div class="card" id="pomo-card">
+    <div class="label" style="margin-bottom:14px;text-align:center"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:8px;vertical-align:middle"></span>Pomodoro</div>
+    <div class="pomo-ring-wrap">
+      <svg class="pomo-svg" viewBox="0 0 150 150">
+        <circle class="pr-bg" cx="75" cy="75" r="65"/>
+        <circle class="pr-fill" id="pr-fill" cx="75" cy="75" r="65"/>
+      </svg>
+      <div class="pomo-center">
+        <div id="pomo-time">50:00</div>
+        <div id="pomo-mode">FOCUS</div>
+      </div>
+    </div>
+    <div class="pomo-btns">
+      <button class="pbtn pbtn-p" id="pomo-btn" onclick="pomoBtnClick()">Start</button>
+      <button class="pbtn pbtn-s" onclick="pomoReset()">Reset</button>
+    </div>
+    <div class="pomo-dots" id="pomo-dots"></div>
+    <div class="pomo-modes">
+      <div class="pmb act" id="pm50" onclick="setPomoMode(50,10,this)">50/10</div>
+      <div class="pmb" id="pm25" onclick="setPomoMode(25,5,this)">25/5</div>
+      <div class="pmb" id="pm90" onclick="setPomoMode(90,20,this)">90/20</div>
+    </div>
+  </div>
+
+  <!-- TOMORROW -->
+
+  <div class="card" id="tom-card">
+    <div class="card-head">
+      <div class="label"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:8px;vertical-align:middle"></span>Tomorrow's Targets</div>
+    </div>
+    <div class="next-list" id="next-list"></div>
+  </div>
+
+  <!-- WEEKLY GOALS -->
+
+  <div class="card" id="weekly-card">
+    <div class="card-head">
+      <div class="label"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:8px;vertical-align:middle"></span>Weekly Goals</div>
+    </div>
+    <div class="wg-list" id="wg-list"></div>
+  </div>
+
+  <!-- RECALL -->
+
+  <div class="card" id="recall-card">
+    <div class="card-head">
+      <div class="label"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:8px;vertical-align:middle"></span>Active Recall</div>
+    </div>
+    <div id="recall-q">Hit the button to get a high-yield concept question for today's subject.</div>
+    <div id="recall-subj"></div>
+    <button class="recall-reveal" id="recall-btn" onclick="fetchRecall()">⚡ Generate Question</button>
+    <div id="recall-ans"></div>
+    <div class="recall-verdict" id="recall-verdict">
+      <button class="rv-btn rv-got" onclick="recallNext('got')">✓ Got it</button>
+      <button class="rv-btn rv-miss" onclick="recallNext('miss')">✗ Missed</button>
+    </div>
+  </div>
+
+  <!-- ERROR LOG -->
+
+  <div class="card" id="err-card">
+    <div class="card-head">
+      <div class="label"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-right:8px;vertical-align:middle"></span>Error Log</div>
+    </div>
+    <div class="err-input-row">
+      <select class="err-sel" id="err-subj">
+        <option>Medicine</option><option>Surgery</option><option>OBG</option>
+        <option>Pathology</option><option>Pharmacology</option><option>PSM</option>
+        <option>Anatomy</option><option>Physiology</option><option>Biochemistry</option>
+        <option>Microbiology</option><option>Paediatrics</option><option>Dermatology</option>
+        <option>ENT</option><option>Ophthalmology</option><option>Orthopaedics</option>
+        <option>Forensics</option><option>Psychiatry</option><option>Anaesthesia</option>
+        <option>Radiology</option>
+      </select>
+      <input class="err-txt" id="err-txt" placeholder="What concept did you miss?" onkeydown="if(event.key==='Enter')addErr()">
+      <button class="err-log-btn" onclick="addErr()">Log</button>
+    </div>
+    <div class="err-list" id="err-list"></div>
+  </div>
+
+  <!-- SUBJECT PROGRESS -->
+
+  <div class="card" id="subj-card">
+    <div class="card-head">
+      <div class="label"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);margin-right:8px;vertical-align:middle"></span>Subject Progress</div>
+      <span style="font-size:10px;color:var(--text-3)">click to update</span>
+    </div>
+    <div class="sp-bars" id="sp-bars"></div>
+  </div>
+
+  <!-- GT TRACKER -->
+
+  <div class="card" id="gt-card">
+    <div class="card-head">
+      <div class="label"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:8px;vertical-align:middle"></span>Grand Test Scores</div>
+    </div>
+    <div class="gt-list" id="gt-list"></div>
+    <div class="gt-add">
+      <input class="gt-inp" id="gt-name" placeholder="GT name">
+      <input class="gt-inp" id="gt-score" placeholder="Score %" type="number" min="0" max="100" style="max-width:90px">
+      <button class="gt-add-btn" onclick="addGT()">+ Log</button>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<!-- ═══ SCRIPT ═══════════════════════════════════════════════════════════ -->
+
+<script>
+'use strict';
+
+/* ──────────────────────────────────────────────────────────────────────
+   START DATE — April 20 2026 = Day 1, Week 1, Phase 1
+   ────────────────────────────────────────────────────────────────────── */
+const START = new Date('2026-04-20T00:00:00');
+
+/* ──────────────────────────────────────────────────────────────────────
+   PHASE / WEEK CALCULATION
+   Phase 1: Wk 1–8   | Phase 2: Wk 9–18  | Phase 3: Wk 19–26
+   Phase 4: Wk 27–34 | Phase 5: Wk 35–38
+   ────────────────────────────────────────────────────────────────────── */
+const PHASES = [
+  { name:'Phase 1 — Small Subjects',    sub:'PSM · ENT · Forensics · Ophthalmology · Dermatology · Psychiatry · Paediatrics · Ortho · Microbiology', weeks:8  },
+  { name:'Phase 2 — The Big 5',         sub:'Medicine (Cardiology first) · Surgery · OBG · Pathology · Pharmacology · Anatomy/Physio/Biochem',       weeks:10 },
+  { name:'Phase 3 — Grand Revision',    sub:'Full subject-wise revision · BTR 2.0 · Weekly Grand Tests',                                              weeks:8  },
+  { name:'Phase 4 — GT Surge',          sub:'2nd revision pass · 1 GT/week · 100 Qs daily · INI-CET specific prep',                                  weeks:8  },
+  { name:'Phase 5 — Final Sprint',      sub:'One-liners only · Full mocks every 3 days · Zero new topics',                                            weeks:4  },
+];
+
+function getWeekNum() {
+  const ms = Date.now() - START.getTime();
+  return Math.max(1, Math.min(38, Math.floor(ms / 604800000) + 1));
+}
+
+function getPhaseInfo(wk) {
+  const thresholds = [8, 18, 26, 34, 38];
+  const starts     = [1,  9, 19, 27, 35];
+  for (let i = 0; i < thresholds.length; i++) {
+    if (wk <= thresholds[i]) {
+      return {
+        phase: PHASES[i],
+        phaseNum: i + 1,
+        weekInPhase: wk - starts[i] + 1,
+        totalWeeks: PHASES[i].weeks,
+      };
+    }
+  }
+  return { phase: PHASES[4], phaseNum:5, weekInPhase:4, totalWeeks:4 };
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   DAILY SCHEDULE TEMPLATE (fixed each day — subjects injected dynamically)
+   ────────────────────────────────────────────────────────────────────── */
+const DAILY_BLOCKS = [
+  { time:'9:00–9:30 AM',    title:'Morning Ritual',          sub:'Review plan · water · light movement',                            tag:'break' },
+  { time:'9:30–10:20 AM',   title:'Block 1 — {A}',           sub:'Primary learning · Marrow E8 notes → close & recall',             tag:'learn' },
+  { time:'10:30–11:20 AM',  title:'Block 2 — {A} cont.',     sub:'Continue · concept map · diagrams from memory',                   tag:'learn' },
+  { time:'11:30 AM–12:20',  title:'MCQ Block — {A}',         sub:'40–60 Qs · immediate review · write each error in log',           tag:'mcq'   },
+  { time:'12:20–1:00 PM',   title:'Lunch Break',             sub:'Eat · walk · complete rest · no screen',                          tag:'break' },
+  { time:'1:00–1:50 PM',    title:'Block 3 — {B}',           sub:'Second subject · Marrow E8 → active recall',                      tag:'learn' },
+  { time:'2:00–2:50 PM',    title:'Block 4 — {B} cont.',     sub:'Tables · smear patterns · differentials from memory',             tag:'learn' },
+  { time:'3:00–3:50 PM',    title:'MCQ Block — {B}',         sub:'40–60 Qs · error log · identify pattern in mistakes',             tag:'mcq'   },
+  { time:'3:50–4:20 PM',    title:'Longer Break',            sub:'Snack · power nap max 20 min · step outside',                     tag:'break' },
+  { time:'4:20–5:10 PM',    title:'Block 5 — {C}',          sub:'Third subject OR D+7 spaced revision slot',                       tag:'learn' },
+  { time:'5:20–6:10 PM',    title:'PYQ Session',             sub:'50 Qs timed · NEET PG/INI-CET PYQs · detailed review after',     tag:'pyq'   },
+  { time:'6:10–7:00 PM',    title:'Dinner & Wind-down',      sub:'Fully offline · family time · walk',                              tag:'break' },
+  { time:'7:00–7:50 PM',    title:'BTR / Spaced Revision',   sub:'BTR 2.0 video (Phase 3+) OR D+1/D+3 revision',                   tag:'btr'   },
+  { time:'8:00–8:50 PM',    title:'Evening MCQ Marathon',    sub:'Mixed subjects · exam conditions · score and analyse',            tag:'mcq'   },
+  { time:'9:00–9:50 PM',    title:'Day Wrap Revision',       sub:'Error log review · 5 key facts per subject · set tomorrow plan', tag:'rev'   },
+  { time:'10:30–11:20 PM',  title:'Night GT / Subject Test', sub:'60–100 Qs timed (full GT on Sundays)',                            tag:'gt'    },
+  { time:'11:20 PM–12 AM',  title:'Final Recall + Prep',     sub:'Write 3 things you learned · confirm tomorrow plan',             tag:'rev'   },
+  { time:'12:00–1:00 AM',   title:'🔒 Sacred Hour',          sub:'Yours. No study. Wind down. Sleep prep.',                        tag:'break' },
+];
+
+/* ──────────────────────────────────────────────────────────────────────
+   SUBJECT ROTATION — indexed by [weekBlock][dayOfWeek 0=Sun…6=Sat]
+   weekBlock: 1=Wk1-2, 3=Wk3-4, 5=Wk5-6, 7=Wk7-8 (Phase1)
+              9=Wk9-10 Cardiology, 11=Wk11-12 Rheuma+Haem, etc.
+   ────────────────────────────────────────────────────────────────────── */
+const ROTATION = {
+  /* PHASE 1 */
+  1: { // Wk 1-2: PSM + ENT + Forensics
+    0:['PYQ Review','Spaced Revision','Error Log'],
+    1:['PSM','ENT','Forensics'],
+    2:['PSM','ENT','Forensics'],
+    3:['PSM','ENT','Forensics'],
+    4:['PSM','ENT','Forensics'],
+    5:['PSM','ENT','Forensics'],
+    6:['PSM PYQs','ENT + Forensics PYQs','GT Review'],
+  },
+  3: { // Wk 3-4: Ophth + Derma + Anaesthesia + Radiology
+    0:['Spaced Revision','Error Log Review','Planning'],
+    1:['Ophthalmology','Dermatology','Anaesthesia'],
+    2:['Ophthalmology','Dermatology','Radiology'],
+    3:['Ophthalmology','Dermatology','Anaesthesia'],
+    4:['Ophthalmology','Dermatology','Radiology'],
+    5:['Ophth PYQs','Derma PYQs','Anaes + Radio PYQs'],
+    6:['GT #1 (100 Qs)','Error Analysis','Spaced Rev Wk1-2'],
+  },
+  5: { // Wk 5-6: Psychiatry + Paeds + Orthopaedics
+    0:['Spaced Revision','Error Log Review','Planning'],
+    1:['Psychiatry','Paediatrics','Orthopaedics'],
+    2:['Psychiatry','Paediatrics','Orthopaedics'],
+    3:['Psychiatry','Paediatrics','Orthopaedics'],
+    4:['Psychiatry','Paediatrics','Orthopaedics'],
+    5:['Psychiatry PYQs','Paeds + Ortho PYQs','Phase 1 Revision'],
+    6:['Spaced Rev','Error Log','Consolidation'],
+  },
+  7: { // Wk 7-8: PSM Part 2 + Microbiology + Consolidation
+    0:['Spaced Revision','Error Log Review','Planning'],
+    1:['PSM Part 2','Microbiology','Comm Med Revision'],
+    2:['PSM Part 2','Microbiology','Micro Immunology'],
+    3:['PSM Part 2','Microbiology','Micro Infections'],
+    4:['PSM Part 2','Microbiology','Revision'],
+    5:['Micro PYQs','Phase 1 One-liners','GT Prep'],
+    6:['GT #2 (150 Qs)','GT Analysis','Plan for Phase 2'],
+  },
+  /* PHASE 2 */
+  9: { // Wk 9-10: Medicine Cardiology + Pharmacology CVS
+    0:['Spaced Revision','Error Log','Planning'],
+    1:['Medicine — ECG','Pharmacology CVS','Pathology Haematology'],
+    2:['Medicine — ECG','Pharmacology CVS','Pathology Haematology'],
+    3:['Medicine — Valvular HD','Pharmacology CVS','Pathology Haematology'],
+    4:['Medicine — Cardiomyopathy','Pharmacology CVS','Pathology Haematology'],
+    5:['Medicine — Heart Failure','Pharmacology Cardio PYQs','Pathology PYQs'],
+    6:['GT #3 — Cardiology (120 Qs)','Error Analysis','Spaced Rev Phase 1'],
+  },
+  11: { // Wk 11-12: Medicine Rheumatology + Haematology
+    0:['Spaced Revision','Error Log','Planning'],
+    1:['Medicine — Rheumatology','Pathology Haematology','Pharmacology DMARDs'],
+    2:['Medicine — Rheumatology','Pathology Haematology','Pharmacology DMARDs'],
+    3:['Medicine — Rheumatology','Pathology Haematology','Pharmacology Immunosuppressants'],
+    4:['Medicine — Vasculitis','Pathology Haemostasis','Pharmacology Gout drugs'],
+    5:['Rheuma + Haem PYQs','Pathology PYQs','Pharmacology PYQs'],
+    6:['GT #4 — Med Cardio+Rheuma+Haem','Error Analysis','Phase 1 Spaced Rev'],
+  },
+  13: { // Wk 13-14: Medicine remaining + Surgery + OBG start
+    0:['Spaced Revision','Error Log','Planning'],
+    1:['Medicine — Endocrine','Surgery','OBG Gynaecology'],
+    2:['Medicine — Endocrine','Surgery — Breast','OBG Gynaecology'],
+    3:['Medicine — Neurology','Surgery — Urology','OBG Obstetrics'],
+    4:['Medicine — Pulmonology','Surgery — Vascular','OBG Obstetrics'],
+    5:['Medicine PYQs','Surgery PYQs','OBG PYQs'],
+    6:['GT #5 — Full Phase 2 Mid-Point','Error Analysis','Spaced Rev All'],
+  },
+  15: { // Wk 15-16: OBG deep + Pathology + Pharmacology
+    0:['Spaced Revision','Error Log','Planning'],
+    1:['OBG — Obstetrics','Pathology General','Pharmacology CNS'],
+    2:['OBG — Obstetrics','Pathology Systemic','Pharmacology Antimicrobials'],
+    3:['OBG — Labour','Pathology Renal','Pharmacology Analgesics'],
+    4:['OBG — PPH/CA','Pathology CNS','Pharmacology Oxytocics'],
+    5:['OBG PYQs','Pathology PYQs','Pharmacology PYQs'],
+    6:['GT #6 — OBG + Path + Pharm','Error Analysis','Cardiology ECG Sprint'],
+  },
+  17: { // Wk 17-18: Medicine GI/Renal + Surgery revision + Anatomy/Physio/Biochem
+    0:['Spaced Revision','Error Log','Planning'],
+    1:['Medicine — GI/Hepatic','Surgery Revision','Anatomy Self-study'],
+    2:['Medicine — Renal','Surgery Revision','Physiology Self-study'],
+    3:['Medicine — Pulmo/ARDS','Surgery Revision','Biochemistry Self-study'],
+    4:['Medicine — Neuromuscular','Surgery Revision','Anatomy/Physio PYQs'],
+    5:['Medicine PYQs','Surgery PYQs','Biochem PYQs'],
+    6:['GT #7 — Full Syllabus Mock (200 Qs)','Error Analysis','Phase 2 Review'],
+  },
+};
+
+function getWeekBlock(wk) {
+  if (wk <= 2)  return 1;
+  if (wk <= 4)  return 3;
+  if (wk <= 6)  return 5;
+  if (wk <= 8)  return 7;
+  if (wk <= 10) return 9;
+  if (wk <= 12) return 11;
+  if (wk <= 14) return 13;
+  if (wk <= 16) return 15;
+  return 17;
+}
+
+function getTodaySubjects() {
+  const wk = getWeekNum();
+  const block = getWeekBlock(wk);
+  const dow = new Date().getDay(); // 0=Sun
+  const rot = ROTATION[block] || ROTATION[1];
+  return rot[dow] || ['Medicine','Surgery','OBG'];
+}
+
+function getTomorrowSubjects() {
+  const wk = getWeekNum();
+  const block = getWeekBlock(wk);
+  const dow = (new Date().getDay() + 1) % 7;
+  const rot = ROTATION[block] || ROTATION[1];
+  return rot[dow] || ['Medicine','Surgery','OBG'];
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   WEEKLY GOALS PER WEEK NUMBER
+   ────────────────────────────────────────────────────────────────────── */
+const WEEKLY_GOALS = {
+  1:['Complete PSM Biostatistics — all formulas memorized','ENT Ear (Parts 1–4): Anatomy + Audiometry done','Forensics Jurisprudence + Traumatology covered','50 PYQs from PSM/ENT/Forensics attempted','Spaced rep log started — min 10 topics entered'],
+  2:['PSM Epidemiology + Communicable Diseases complete','ENT full (Ear+Nose+Pharynx+Larynx) done','Forensics complete — all 9 chapters','PYQ block Sunday: 90 Qs timed','Error log ≥20 entries with reason analysis'],
+  3:['Ophthalmology Retina + Glaucoma done','Dermatology Infections + STDs done','Anaesthesia complete (2 days max)','Radiology complete (1 day)','50 Ophth + 50 Derma MCQs done'],
+  4:['Full Ophth + Derma revision','GT #1 attempted — 100 Qs · target >55%','GT analysis complete — top 5 error patterns found','Phase 1 Wk 1–2 spaced revision done','BTR evening session started for ENT'],
+  5:['Psychiatry all chapters done','Paediatrics Neonatology Parts 1–3 complete','Orthopaedics Bone infections + Paeds Ortho done','60 Psych + 60 Paeds+Ortho PYQs attempted','Streak maintained all 7 days'],
+  6:['Psych + Paeds + Ortho full revision','Phase 1 Wk 1–4 D+21 spaced revision done','Sports injuries + Fracture principles done','Error log reviewed — all wrong concepts relearned','Tomorrow plan set every night before sleep'],
+  7:['PSM Part 2: Contraception + MCH + BMW + Nutrition done','Microbiology: General + Immunology complete','Micro: All systems infections covered','GT #2 prep: Phase 1 one-liners rapid-fired','Subject tracker updated for all Phase 1 subjects'],
+  8:['GT #2 (150 Qs): Target >60% — attempted & reviewed','Phase 1 complete — all 11 subjects done','Weak subjects identified and flagged for Phase 3','Phase 2 plan reviewed and ready','8-day streak unbroken entering Phase 2'],
+  9:['ECG: STEMI localisation + Arrhythmias mastered','Valvular HD: all murmurs and pulse characters','Cardiomyopathy differentials locked','CVS Pharmacology: DOC in each cardiac condition','60 Cardiology PYQs attempted'],
+  10:['Heart Failure criteria + management done','Pericarditis vs Effusion vs Tamponade done','GT #3 Cardiology: target >65%','Cardiology BTR revision started','Phase 1 D+21 spaced revision complete'],
+  11:['RA, SLE, Sclerosis, Spondyloarthropathy done','Vasculitis map (vessel size, ANCA vs non-ANCA) done','Haematology Leukaemias + Lymphomas complete','DMARD pharmacology done','Rheuma + Haem PYQs: 80 Qs'],
+  12:['Myeloma, Haemolytic anaemias, DIC, Haemostasis done','GT #4: Med Cardio+Rheuma+Haem — target >68%','All Phase 1 subjects spaced revision','BTR for Rheumatology done','Error log: top 10 recurring mistakes fixed'],
+};
+
+/* ──────────────────────────────────────────────────────────────────────
+   SUBJECT DATA
+   ────────────────────────────────────────────────────────────────────── */
+const SUBJECTS = [
+  {n:'Medicine',      c:'#60a5fa'},{n:'Surgery',       c:'#34d399'},
+  {n:'OBG',          c:'#f472b6'},{n:'Pathology',     c:'#fb923c'},
+  {n:'Pharmacology', c:'#c084fc'},{n:'PSM',           c:'#2dd4bf'},
+  {n:'Dermatology',  c:'#fbbf24'},{n:'ENT',           c:'#818cf8'},
+  {n:'Ophthalmology',c:'#4ade80'},{n:'Psychiatry',    c:'#f9a8d4'},
+  {n:'Paediatrics',  c:'#fdba74'},{n:'Orthopaedics',  c:'#94a3b8'},
+  {n:'Forensics',    c:'#e879f9'},{n:'Microbiology',  c:'#6ee7b7'},
+  {n:'Anatomy',      c:'#fcd34d'},{n:'Physiology',    c:'#67e8f9'},
+];
+
+/* ──────────────────────────────────────────────────────────────────────
+   RECALL BANK (local fallback)
+   ────────────────────────────────────────────────────────────────────── */
+const RECALL = [
+  {q:'What is the Erlanger-Gasser classification order of nerve fibres susceptible to local anaesthetic blockade?',a:'B > C > Aδ > Aγ > Aβ > Aα. Pain/temperature blocked first (Aδ, C), motor last (Aα). Myelinated fibres blocked before unmyelinated.',s:'Anaesthesia'},
+  {q:'Differentiate Type I vs Type II error in a clinical trial. What controls each?',a:'Type I (α = 0.05): false positive — rejecting a true null. Type II (β): false negative — accepting a false null. Power = 1−β. Sample size controls both; mainly designed to control Type II.',s:'PSM — Biostatistics'},
+  {q:'What are the ROME IV criteria for IBS? Name the 4 subtypes.',a:'Recurrent abdominal pain ≥1 day/week for 3 months, associated with ≥2 of: related to defecation, change in stool frequency, change in stool form. Subtypes: IBS-C, IBS-D, IBS-M (mixed), IBS-U (unclassified).',s:'Medicine — GI'},
+  {q:'A patient has Pemphigus vulgaris. What is the target antigen, histological finding, and DIF pattern?',a:'Target: Desmoglein 3 (mucous membranes) + Dsg1 (skin). Histology: Suprabasal acantholysis, Tzanck cells. DIF: IgG + C3 in intercellular spaces — "chicken wire" or "fish-net" pattern.',s:'Dermatology'},
+  {q:'Describe the Salter-Harris classification of growth plate fractures. Which type has worst prognosis?',a:'I: Through physis only. II: Physis + metaphysis (most common). III: Physis + epiphysis (intra-articular). IV: All 3. V: Crush of physis — worst prognosis, risk of AVN and growth arrest.',s:'Orthopaedics'},
+  {q:'What is HELLP syndrome? Lab values that define it? Definitive management?',a:'Haemolysis + Elevated Liver enzymes + Low Platelets. LDH >600 U/L, AST/ALT elevated, Platelets <100,000/μL. Occurs in severe pre-eclampsia. Definitive Rx: Delivery. MgSO4 for seizure prophylaxis.',s:'OBG — Obstetrics'},
+  {q:'Differentiate Caput succedaneum vs Cephalhaematoma in newborn.',a:'Caput: over scalp, crosses suture lines, present at birth, pits on pressure, resolves in days. Cephalhaematoma: subperiosteal, does NOT cross sutures, appears hours after birth, firm, may calcify, risk of jaundice.',s:'Paediatrics — Neonatology'},
+  {q:'In SLE: most sensitive antibody? Most specific? Which correlates with disease activity?',a:'Most sensitive: ANA (95–99%, but not specific). Most specific: Anti-Sm and Anti-dsDNA. Anti-dsDNA correlates with disease activity and lupus nephritis.',s:'Medicine — Rheumatology'},
+  {q:'What is the Philadelphia chromosome? What does the gene product do and how is it treated?',a:'t(9;22) — BCR-ABL fusion gene. Constitutively active tyrosine kinase → uncontrolled myeloid proliferation → CML. First-line treatment: Imatinib (TKI — competitive inhibitor of BCR-ABL).',s:'Pathology — Haematology'},
+  {q:'What are DUKE criteria for infective endocarditis? Name 2 major and 3 minor.',a:'Major: (1) Positive blood culture — 2 typical organisms or persistent bacteraemia. (2) Echo evidence — vegetation/abscess/new regurgitation. Minor: Predisposing condition, Fever >38°C, Vascular phenomena, Immunological phenomena, Microbiological (doesn\'t meet major).',s:'Medicine — Cardiology'},
+  {q:'Describe the Austin Flint murmur — cause and how to differentiate from true MS.',a:'Mid-diastolic murmur in severe AR. AR jet vibrates the anterior mitral leaflet causing functional obstruction → mimics MS. Differentials: No opening snap, no loud S1 (unlike true MS). Echocardiography confirms.',s:'Medicine — Cardiology'},
+  {q:'What is the Hutchinson\'s triad of congenital syphilis?',a:'1. Interstitial keratitis (5–20 years). 2. Hutchinson\'s teeth — peg-shaped, notched upper central incisors. 3. Nerve deafness (8th cranial nerve). Triad = late congenital syphilis. Caused by Treponema pallidum.',s:'Dermatology'},
+  {q:'A patient has haemoptysis, haematuria, and glomerulonephritis. Diagnosis, antibody, target?',a:'Goodpasture\'s syndrome. Anti-GBM antibody targets α3 chain of Type IV collagen — present in both glomerular BM and alveolar BM. Linear IgG on immunofluorescence. Treat: Plasmapheresis + cyclophosphamide + steroids.',s:'Medicine — Renal'},
+  {q:'What is the P/F ratio? Berlin definition thresholds for ARDS severity?',a:'P/F = PaO₂ / FiO₂. Berlin criteria: Mild 200–300, Moderate 100–200, Severe <100. Must have: bilateral opacities on imaging, within 1 week of clinical insult, not fully explained by cardiac failure, PEEP/CPAP ≥5 cmH₂O.',s:'Medicine — Pulmonology'},
+];
+let recallIdx = Math.floor(Math.random() * RECALL.length);
+
+/* ──────────────────────────────────────────────────────────────────────
+   LOCAL STORAGE HELPERS
+   ────────────────────────────────────────────────────────────────────── */
+const get = (k,d) => { try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch{return d} };
+const set = (k,v) => { try{localStorage.setItem(k,JSON.stringify(v))}catch{} };
+const TODAY = () => new Date().toISOString().slice(0,10);
+
+/* ──────────────────────────────────────────────────────────────────────
+   CLOCK
+   ────────────────────────────────────────────────────────────────────── */
+function tickClock() {
+  document.getElementById('live-clock').textContent =
+    new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  highlightBlock();
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+/* ──────────────────────────────────────────────────────────────────────
+   PHASE BAR
+   ────────────────────────────────────────────────────────────────────── */
+function initPhase() {
+  const wk = getWeekNum();
+  const {phase, weekInPhase, totalWeeks} = getPhaseInfo(wk);
+  document.getElementById('phase-name').textContent = phase.name;
+  document.getElementById('phase-sub').textContent  = phase.sub;
+  document.getElementById('phase-wk').textContent   = `Week ${weekInPhase} of ${totalWeeks}`;
+  const pct = Math.round((weekInPhase / totalWeeks) * 100);
+  document.getElementById('pbar').style.width = Math.max(2, pct) + '%';
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   SCHEDULE RENDER
+   ────────────────────────────────────────────────────────────────────── */
+function initSchedule() {
+  const now  = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('sched-day').textContent  = days[now.getDay()];
+  document.getElementById('sched-date').textContent = now.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+
+  const [A, B, C] = getTodaySubjects();
+  const list = document.getElementById('time-list');
+  list.innerHTML = '';
+
+  DAILY_BLOCKS.forEach(b => {
+    const title = b.title.replace('{A}', A).replace('{B}', B).replace('{C}', C);
+    const div = document.createElement('div');
+    div.className = 'tb';
+    div.innerHTML = `
+      <div class="tb-time">${b.time}</div>
+      <div>
+        <div class="tb-title">${title}</div>
+        <div class="tb-sub">${b.sub}</div>
+        <span class="tag tag-${b.tag}">${b.tag.toUpperCase()}</span>
+      </div>`;
+    list.appendChild(div);
+  });
+  highlightBlock();
+}
+
+function highlightBlock() {
+  const now  = new Date();
+  const cur  = now.getHours()*60 + now.getMinutes();
+  const ranges = [
+    [9*60,9*60+30],[9*60+30,10*60+20],[10*60+30,11*60+20],
+    [11*60+30,12*60+20],[12*60+20,13*60],[13*60,13*60+50],
+    [14*60,14*60+50],[15*60,15*60+50],[15*60+50,16*60+20],
+    [16*60+20,17*60+10],[17*60+20,18*60+10],[18*60+10,19*60],
+    [19*60,19*60+50],[20*60,20*60+50],[21*60,21*60+50],
+    [22*60+30,23*60+20],[23*60+20,24*60],[0,60],
+  ];
+  document.querySelectorAll('.tb').forEach((el,i) => {
+    el.classList.remove('active','past');
+    if (i < ranges.length) {
+      const [s,e] = ranges[i];
+      if (cur >= s && cur < e) {
+        el.classList.add('active');
+        el.scrollIntoView({behavior:'smooth',block:'nearest'});
+      } else if (cur >= e) {
+        el.classList.add('past');
+      }
+    }
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   CHECKLIST
+   ────────────────────────────────────────────────────────────────────── */
+function clKey() { return 'cl_' + TODAY(); }
+
+function defaultTasks() {
+  const [A,B,C] = getTodaySubjects();
+  return [
+    {t:`📚 Study: ${A} — Primary learning block (Block 1+2)`, d:false},
+    {t:`🧠 MCQs: ${A} — 40–60 Qs + error log`,               d:false},
+    {t:`📚 Study: ${B} — Primary learning block (Block 3+4)`, d:false},
+    {t:`🧠 MCQs: ${B} — 40–60 Qs`,                           d:false},
+    {t:`📖 Block 5: ${C} / Spaced revision`,                  d:false},
+    {t:'📋 PYQ Session — 50 Qs timed',                        d:false},
+    {t:'🔁 BTR / Evening revision slot',                       d:false},
+    {t:'📊 Update spaced repetition log',                      d:false},
+    {t:'📝 Write tomorrow\'s plan',                            d:false},
+    {t:'✅ Error log review before sleep',                     d:false},
+  ];
+}
+
+function renderCL() {
+  let data = get(clKey(), null);
+  if (!data) { data = defaultTasks(); set(clKey(), data); }
+
+  const list = document.getElementById('cl-list');
+  list.innerHTML = '';
+  data.forEach((item,i) => {
+    const div = document.createElement('div');
+    div.className = 'cl-item' + (item.d ? ' done' : '');
+    div.onclick = () => toggleCL(i);
+    div.innerHTML = `<div class="cl-box"></div><div class="cl-text">${item.t}</div>`;
+    list.appendChild(div);
+  });
+  updateProg(data);
+}
+
+function toggleCL(i) {
+  const data = get(clKey(), defaultTasks());
+  data[i].d = !data[i].d;
+  set(clKey(), data);
+  renderCL();
+  updateStreak();
+}
+
+function addTask() {
+  const inp = document.getElementById('task-inp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  const data = get(clKey(), defaultTasks());
+  data.push({t: txt, d: false});
+  set(clKey(), data);
+  inp.value = '';
+  renderCL();
+  toastMsg('Task added');
+}
+
+function updateProg(data) {
+  const done = data.filter(x=>x.d).length;
+  const pct  = data.length ? Math.round(done/data.length*100) : 0;
+  document.getElementById('prog-pct').textContent  = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   STREAK
+   ────────────────────────────────────────────────────────────────────── */
+function updateStreak() {
+  const today = TODAY();
+  const data  = get(clKey(), []);
+  const any   = Array.isArray(data) ? data.some(x=>x.d) : false;
+  let   s     = get('streak', {n:0, last:''});
+  if (any && s.last !== today) {
+    const yest = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    s.n    = s.last === yest ? s.n + 1 : 1;
+    s.last = today;
+    set('streak', s);
+  }
+  document.getElementById('streak-n').textContent = s.n || 0;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   POMODORO
+   ────────────────────────────────────────────────────────────────────── */
+let P = {run:false, timer:null, fMin:50, bMin:10, tot:3000, rem:3000, brk:false, sess:0, max:4};
+const CIRC = 2 * Math.PI * 65; // r=65
+
+function pomoBtnClick() {
+  if (P.run) {
+    clearInterval(P.timer); P.run = false;
+    document.getElementById('pomo-btn').textContent = 'Resume';
+  } else {
+    P.timer = setInterval(pomoTick, 1000); P.run = true;
+    document.getElementById('pomo-btn').textContent = 'Pause';
+  }
+}
+
+function pomoTick() {
+  if (P.rem <= 0) {
+    clearInterval(P.timer); P.run = false;
+    if (!P.brk) {
+      P.sess = Math.min(P.sess+1, P.max);
+      renderPomoDots();
+      toastMsg(P.sess >= P.max ? '🎉 All sessions done! Great work.' : '✅ Focus done! Take a break.');
+      P.brk = true; P.tot = P.bMin*60; P.rem = P.bMin*60;
+      document.getElementById('pr-fill').classList.add('brk');
+      document.getElementById('pomo-mode').textContent = 'BREAK';
+    } else {
+      toastMsg('💪 Break over — back to work!');
+      P.brk = false; P.tot = P.fMin*60; P.rem = P.fMin*60;
+      document.getElementById('pr-fill').classList.remove('brk');
+      document.getElementById('pomo-mode').textContent = 'FOCUS';
+    }
+    P.timer = setInterval(pomoTick, 1000); P.run = true;
+    document.getElementById('pomo-btn').textContent = 'Pause';
+  } else { P.rem--; }
+  updatePomoDisplay();
+}
+
+function updatePomoDisplay() {
+  const m = String(Math.floor(P.rem/60)).padStart(2,'0');
+  const s = String(P.rem%60).padStart(2,'0');
+  document.getElementById('pomo-time').textContent = `${m}:${s}`;
+  const pct = 1 - (P.rem / P.tot);
+  document.getElementById('pr-fill').style.strokeDashoffset = CIRC * (1-pct);
+}
+
+function pomoReset() {
+  clearInterval(P.timer); P.run = false; P.brk = false;
+  P.rem = P.fMin*60; P.tot = P.fMin*60;
+  document.getElementById('pomo-btn').textContent = 'Start';
+  document.getElementById('pr-fill').classList.remove('brk');
+  document.getElementById('pomo-mode').textContent = 'FOCUS';
+  updatePomoDisplay();
+}
+
+function setPomoMode(f, b, el) {
+  pomoReset();
+  P.fMin = f; P.bMin = b; P.rem = f*60; P.tot = f*60;
+  document.querySelectorAll('.pmb').forEach(x=>x.classList.remove('act'));
+  el.classList.add('act');
+  updatePomoDisplay();
+}
+
+function renderPomoDots() {
+  const c = document.getElementById('pomo-dots');
+  c.innerHTML = '';
+  for (let i=0;i<P.max;i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot' + (i < P.sess ? ' done' : '');
+    c.appendChild(d);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   TOMORROW
+   ────────────────────────────────────────────────────────────────────── */
+function renderTomorrow() {
+  const subjs = getTomorrowSubjects();
+  const colors= ['#60a5fa','#34d399','#c084fc'];
+  const descs = [
+    'Primary learning blocks + MCQ session',
+    'Primary learning + active recall drills',
+    'Revision / Spaced repetition + error log',
+  ];
+  const list = document.getElementById('next-list');
+  list.innerHTML = '';
+  subjs.forEach((s,i) => {
+    const div = document.createElement('div');
+    div.className = 'next-item';
+    div.innerHTML = `
+      <div class="next-bar" style="background:${colors[i]}"></div>
+      <div>
+        <div class="next-name">${s}</div>
+        <div class="next-topics">${descs[i]}</div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   WEEKLY GOALS
+   ────────────────────────────────────────────────────────────────────── */
+function renderWeeklyGoals() {
+  const wk    = getWeekNum();
+  const goals = WEEKLY_GOALS[Math.min(wk, 12)] || WEEKLY_GOALS[12];
+  const key   = 'wg_' + wk;
+  const done  = get(key, {});
+  const list  = document.getElementById('wg-list');
+  list.innerHTML = '';
+  goals.forEach((g,i) => {
+    const isDone = !!done[i];
+    const div = document.createElement('div');
+    div.className = 'wg-item' + (isDone ? ' done-g' : '');
+    div.onclick = () => toggleWG(i, key, done);
+    div.innerHTML = `
+      <div class="wg-num">${i+1}</div>
+      <div class="wg-text">${g}</div>
+      <div class="wg-chk">${isDone ? '✓' : ''}</div>`;
+    list.appendChild(div);
+  });
+}
+
+function toggleWG(i, key, done) {
+  done[i] = !done[i];
+  set(key, done);
+  renderWeeklyGoals();
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   QUOTE — Claude API with fallback
+   ────────────────────────────────────────────────────────────────────── */
+const FALLBACK_QUOTES = [
+  {t:"Every page you read tonight is a patient's life you'll save tomorrow. The knowledge feels abstract now, but it will be visceral — real — at the bedside. Study like that patient is already waiting.", a:"William Osler, adapted"},
+  {t:"Rank is not an accident. It is the sum of every hour when you chose discipline over comfort, clarity over confusion, and mastery over mediocrity. You are building that sum right now.", a:"Harvey Cushing, adapted"},
+  {t:"The difference between a good physician and a great one is not intelligence — it is the hunger to understand completely, and the patience to pursue that understanding until it becomes reflex.", a:"Francis Weld Peabody"},
+  {t:"In medicine, as in mathematics, the most elegant solution is the one derived from first principles. Memorise less. Understand more. The exam rewards the mind that can reason, not the one that can recite.", a:"Paul Brand, adapted"},
+  {t:"Somewhere, a patient is waiting for you to have studied this today. That is reason enough.", a:"Anonymous"},
+];
+
+async function fetchQuote() {
+  const btn  = document.getElementById('quote-refresh');
+  const icon = document.getElementById('qr-icon');
+  btn.classList.add('loading');
+  icon.classList.add('spin');
+  document.getElementById('quote-text').textContent   = 'Fetching…';
+  document.getElementById('quote-author').textContent = '';
+
+  try {
+    const res  = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:
+          'Write a powerful 2-4 sentence motivational paragraph for a medical student preparing for NEET PG / INI-CET. ' +
+          'Make it specific to the weight of medical knowledge, clinical responsibility, or mastery. ' +
+          'Do NOT use clichés. Real, specific, visceral. ' +
+          'End with: — [Real doctor/scientist/philosopher name and credential]. ' +
+          'Output ONLY the paragraph and attribution line, nothing else.'
+        }]
+      })
+    });
+    const data = await res.json();
+    const txt  = data.content?.[0]?.text?.trim() || '';
+    const lines= txt.split('\n').filter(l=>l.trim());
+    const last = lines[lines.length-1];
+    const isAt = /^[-—]/.test(last);
+    const body = isAt ? lines.slice(0,-1).join(' ') : txt;
+    const attr = isAt ? last.replace(/^[-—]\s*/,'') : '';
+    document.getElementById('quote-text').textContent   = body;
+    document.getElementById('quote-author').textContent = attr ? `— ${attr}` : '';
+    set('quote', {t:body, a:attr, d:TODAY()});
+  } catch {
+    const f = FALLBACK_QUOTES[Math.floor(Math.random()*FALLBACK_QUOTES.length)];
+    document.getElementById('quote-text').textContent   = f.t;
+    document.getElementById('quote-author').textContent = `— ${f.a}`;
+  }
+  btn.classList.remove('loading');
+  icon.classList.remove('spin');
+}
+
+function loadQuote() {
+  const saved = get('quote', null);
+  if (saved && saved.d === TODAY() && saved.t) {
+    document.getElementById('quote-text').textContent   = saved.t;
+    document.getElementById('quote-author').textContent = saved.a ? `— ${saved.a}` : '';
+  } else { fetchQuote(); }
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   RECALL
+   ────────────────────────────────────────────────────────────────────── */
+let recallAnswer = '';
+
+async function fetchRecall() {
+  const btn = document.getElementById('recall-btn');
+  const q   = document.getElementById('recall-q');
+  const sub = document.getElementById('recall-subj');
+  const ans = document.getElementById('recall-ans');
+  const vrd = document.getElementById('recall-verdict');
+  ans.classList.remove('show'); vrd.classList.remove('show');
+  btn.textContent = '⏳ Generating…'; btn.disabled = true;
+
+  const [A] = getTodaySubjects();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:
+          `Generate one high-yield NEET PG / INI-CET active recall question about ${A}. ` +
+          'It should be a clinical vignette or concept question requiring genuine understanding. ' +
+          'Format EXACTLY as:\nQUESTION: [question]\nSUBJECT: [subject/topic]\nANSWER: [concise 2-4 sentence answer]'
+        }]
+      })
+    });
+    const data = await res.json();
+    const txt  = data.content?.[0]?.text || '';
+    const qm   = txt.match(/QUESTION:\s*([\s\S]+?)(?=SUBJECT:|$)/);
+    const sm   = txt.match(/SUBJECT:\s*([\s\S]+?)(?=ANSWER:|$)/);
+    const am   = txt.match(/ANSWER:\s*([\s\S]+?)$/);
+    q.textContent   = qm?.[1]?.trim() || txt;
+    sub.textContent = sm?.[1]?.trim() || A;
+    recallAnswer    = am?.[1]?.trim() || '';
+  } catch {
+    const item      = RECALL[recallIdx % RECALL.length];
+    q.textContent   = item.q;
+    sub.textContent = item.s;
+    recallAnswer    = item.a;
+    recallIdx++;
+  }
+
+  btn.textContent = '👁 Reveal Answer'; btn.disabled = false;
+  btn.onclick = revealRecall;
+}
+
+function revealRecall() {
+  const ans = document.getElementById('recall-ans');
+  const vrd = document.getElementById('recall-verdict');
+  ans.textContent = recallAnswer;
+  ans.classList.add('show');
+  vrd.classList.add('show');
+  document.getElementById('recall-btn').textContent = '⚡ Generate Question';
+  document.getElementById('recall-btn').onclick = fetchRecall;
+}
+
+function recallNext(type) {
+  toastMsg(type === 'got' ? '✓ Great — moving on' : '📌 Noted — revisit this one');
+  document.getElementById('recall-ans').classList.remove('show');
+  document.getElementById('recall-verdict').classList.remove('show');
+  document.getElementById('recall-q').textContent   = 'Hit the button for the next question.';
+  document.getElementById('recall-subj').textContent = '';
+  document.getElementById('recall-btn').textContent  = '⚡ Generate Question';
+  document.getElementById('recall-btn').onclick      = fetchRecall;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   ERROR LOG
+   ────────────────────────────────────────────────────────────────────── */
+function errKey() { return 'err_' + TODAY(); }
+
+function renderErrLog() {
+  const errs = get(errKey(), []);
+  const list = document.getElementById('err-list');
+  list.innerHTML = '';
+  if (!errs.length) {
+    list.innerHTML = '<div class="err-empty">No errors logged today. Keep going! 💪</div>';
+    return;
+  }
+  errs.forEach((e,i) => {
+    const div = document.createElement('div');
+    div.className = 'err-item';
+    div.innerHTML = `<span class="err-subj">${e.s}</span>${e.t}<span class="err-del" onclick="delErr(${i})">×</span>`;
+    list.appendChild(div);
+  });
+}
+
+function addErr() {
+  const s = document.getElementById('err-subj').value;
+  const t = document.getElementById('err-txt').value.trim();
+  if (!t) return;
+  const errs = get(errKey(), []);
+  errs.unshift({s, t});
+  set(errKey(), errs);
+  document.getElementById('err-txt').value = '';
+  renderErrLog();
+  toastMsg('Error logged 📝');
+}
+
+function delErr(i) {
+  const errs = get(errKey(), []);
+  errs.splice(i, 1);
+  set(errKey(), errs);
+  renderErrLog();
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   SUBJECT PROGRESS
+   ────────────────────────────────────────────────────────────────────── */
+function renderSubjProg() {
+  const prog = get('subjprog', {});
+  const cont = document.getElementById('sp-bars');
+  cont.innerHTML = '';
+  SUBJECTS.forEach(s => {
+    const pct = prog[s.n] || 0;
+    const div = document.createElement('div');
+    div.className = 'sp-row';
+    div.title = 'Click to update';
+    div.onclick = () => updateSubj(s.n);
+    div.innerHTML = `
+      <div class="sp-lbl">
+        <span class="sp-name">${s.n}</span>
+        <span class="sp-pct">${pct}%</span>
+      </div>
+      <div class="sp-track">
+        <div class="sp-fill" style="width:${pct}%;background:${s.c}"></div>
+      </div>`;
+    cont.appendChild(div);
+  });
+}
+
+function updateSubj(name) {
+  const prog = get('subjprog', {});
+  const cur  = prog[name] || 0;
+  const val  = prompt(`${name} — current progress (0–100):`, cur);
+  if (val !== null && !isNaN(val)) {
+    prog[name] = Math.max(0, Math.min(100, parseInt(val)));
+    set('subjprog', prog);
+    renderSubjProg();
+    toastMsg(`${name} → ${prog[name]}%`);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   GT TRACKER
+   ────────────────────────────────────────────────────────────────────── */
+function renderGT() {
+  const gts  = get('gts', []);
+  const list = document.getElementById('gt-list');
+  list.innerHTML = '';
+  if (!gts.length) {
+    list.innerHTML = '<div class="err-empty">No GTs logged yet. First one at end of Week 2!</div>';
+    return;
+  }
+  gts.slice(-8).forEach(g => {
+    const p = parseFloat(g.s);
+    const cls = p >= 75 ? 'g-good' : '';
+    const sc  = p >= 75 ? 's-good' : p >= 55 ? 's-mid' : 's-bad';
+    const div = document.createElement('div');
+    div.className = `gt-item ${cls}`;
+    div.innerHTML = `<span>${g.n}</span><span class="gt-score ${sc}">${g.s}%</span>`;
+    list.appendChild(div);
+  });
+}
+
+function addGT() {
+  const n = document.getElementById('gt-name').value.trim();
+  const s = document.getElementById('gt-score').value.trim();
+  if (!n || !s) return;
+  const gts = get('gts', []);
+  gts.push({n, s, d:TODAY()});
+  set('gts', gts);
+  document.getElementById('gt-name').value  = '';
+  document.getElementById('gt-score').value = '';
+  renderGT();
+  toastMsg(`GT logged: ${n} — ${s}%`);
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   TOAST
+   ────────────────────────────────────────────────────────────────────── */
+let toastT;
+function toastMsg(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+   INIT
+   ────────────────────────────────────────────────────────────────────── */
+function init() {
+  initPhase();
+  initSchedule();
+  renderCL();
+  updateStreak();
+  updatePomoDisplay();
+  renderPomoDots();
+  renderTomorrow();
+  renderWeeklyGoals();
+  renderErrLog();
+  renderSubjProg();
+  renderGT();
+  loadQuote();
+
+  // Recall btn initial state
+  document.getElementById('recall-btn').onclick = fetchRecall;
+}
+
+init();
+</script>
+
+</body>
+</html>
